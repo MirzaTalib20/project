@@ -1,0 +1,163 @@
+import { Product } from '../types';
+
+export const products: Product[] = [
+  {
+    id: '1',
+    name: 'Industrial Air Cooler',
+    description: 'Heavy-duty industrial air cooler perfect for large spaces',
+    images: ['https://i.pinimg.com/736x/bd/01/15/bd011539328d1ca0c69d10567bc06ebf.jpg'],
+    buyPrice: 45000,
+    rentPrices: { daily: 1500, weekly: 9000, monthly: 32000 },
+    category: 'Industrial',
+    availability: 'available',
+    specifications: { 'Cooling Capacity': '5000 CMH', Power: '220V / 50Hz', 'Tank Capacity': '100L' },
+    features: ['Heavy-duty', 'Portable design'],
+    locations: ['Pune']
+  },
+  {
+    id: 'mist-fan-industrial',
+    name: 'Industrial Mist Fan',
+    description: 'Heavy-duty industrial mist fan perfect for large outdoor events',
+    images: [
+      'https://images.pexels.com/photos/1108701/pexels-photo-1108701.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/1108701/pexels-photo-1108701.jpeg?auto=compress&cs=tinysrgb&w=400'
+    ],
+    buyPrice: 35000,
+    rentPrices: { daily: 150, weekly: 900, monthly: 3500 },
+    category: 'Mist Fans',
+    availability: 'available',
+    specifications: { Power: '750W', Coverage: '200 sq ft', 'Tank Capacity': '50L', Height: '180cm', Weight: '45kg' },
+    features: ['High power', 'Outdoor use'],
+    locations: ['Pune']
+  },
+  {
+    id: 'pedestal-fan-26inch',
+    name: 'Pedestal Fan 26 Inch',
+    description: '26-inch pedestal fan with 90° oscillation, ideal for homes and small events.',
+    images: ['https://www.rentooze.in/proimg/PEDESTIAL FAN - 2.png'],
+    buyPrice: 15000,
+    rentPrices: { daily: 150, weekly: 900, monthly: 3500 },
+    category: 'Fans',
+    availability: 'available',
+    specifications: { Size: '26 Inch', Type: 'Pedestal Fan' },
+    features: ['Oscillating', 'Portable'],
+    locations: ['Pune']
+  },
+  {
+    id: 'silver-mist-fan',
+    name: 'Silver Mist Fan',
+    description: 'Silver mist fan with 41L water capacity for efficient cooling at small to medium events.',
+    images: ['https://www.rentooze.in/proimg/MIST FAN SILVER - 6.png'],
+    buyPrice: 12000,
+    rentPrices: { daily: 200, weekly: 1200, monthly: 4800 },
+    category: 'Mist Fans',
+    availability: 'available',
+    features: ['41L water capacity', 'Fine mist spray', 'Portable design'],
+    specifications: { Capacity: '41L', Color: 'Silver' },
+    locations: ['Pune']
+  },
+  {
+    id: 'electric-heater',
+    name: 'Electric Heater',
+    description: 'Plug n Play electric heater, ideal for personal and small space heating.',
+    images: ['https://www.rentooze.in/proimg/Heater - 2.png'],
+    buyPrice: 8000,
+    rentPrices: { daily: 200, weekly: 1200, monthly: 4500 },
+    category: 'Heaters',
+    availability: 'available',
+    features: ['Easy plug-and-play operation', 'Compact design', 'Fast heating'],
+    specifications: { Type: 'Electric', Power: '1500W' },
+    locations: ['Pune']
+  },
+  {
+    id: 'black-mist-fan',
+    name: 'Black Mist Fan',
+    description: 'Black mist fan with 41L water tank for effective outdoor cooling.',
+    images: ['https://www.rentooze.in/proimg/MIST FAN BLACK - 1.png'],
+    buyPrice: 12000,
+    rentPrices: { daily: 210, weekly: 1260, monthly: 5000 },
+    category: 'Mist Fans',
+    availability: 'available',
+    features: ['41L tank', 'Adjustable mist', 'Portable design'],
+    specifications: { Capacity: '41L', Color: 'Black' },
+    locations: ['Pune']
+  },
+  {
+    id: 'white-mist-fan',
+    name: 'White Mist Fan',
+    description: 'White mist fan with 41L water capacity, perfect for small gatherings and patios.',
+    images: ['https://www.rentooze.in/proimg/whitemistfan.jpeg'],
+    buyPrice: 12000,
+    rentPrices: { daily: 210, weekly: 1260, monthly: 5000 },
+    category: 'Mist Fans',
+    availability: 'available',
+    features: ['41L tank', 'Portable design', 'Fine mist spray'],
+    specifications: { Capacity: '41L', Color: 'White' },
+    locations: ['Pune']
+  },
+  {
+    id: 'air-cooler-75ltr',
+    name: 'Air Cooler 75 Ltrs',
+    description: '75L air cooler with silent operation for medium indoor and outdoor areas.',
+    images: ['https://www.rentooze.in/proimg/COOLER 90 LTR - 1.png'],
+    buyPrice: 18000,
+    rentPrices: { daily: 300, weekly: 1800, monthly: 7000 },
+    category: 'Coolers',
+    availability: 'available',
+    features: ['75L water tank', 'Silent operation', 'Portable design'],
+    specifications: { Capacity: '75L' },
+    locations: ['Pune']
+  },
+  {
+    id: 'silent-air-cooler-75ltr',
+    name: 'Silent Air Cooler 75 Ltrs',
+    description: 'Silent 75L air cooler suitable for quiet environments like offices or small events.',
+    images: ['https://www.rentooze.in/proimg/aircooler752.png'],
+    buyPrice: 20000,
+    rentPrices: { daily: 320, weekly: 1920, monthly: 7500 },
+    category: 'Coolers',
+    availability: 'available',
+    features: ['Silent operation', '75L tank', 'Easy mobility'],
+    specifications: { Capacity: '75L' },
+    locations: ['Pune']
+  },
+  {
+    id: 'air-cooler-110ltr',
+    name: 'Air Cooler 110 Ltrs',
+    description: '110L air cooler for large rooms and event spaces.',
+    images: ['https://www.rentooze.in/proimg/AIR COOLER - 100 LTR FRONT.png'],
+    buyPrice: 25000,
+    rentPrices: { daily: 400, weekly: 2400, monthly: 9000 },
+    category: 'Coolers',
+    availability: 'available',
+    features: ['110L water tank', 'Efficient cooling', 'Portable'],
+    specifications: { Capacity: '110L' },
+    locations: ['Pune']
+  },
+  {
+    id: 'portable-ac-1ton',
+    name: 'Portable AC 1 Ton',
+    description: '1 Ton portable air conditioner suitable for small to medium spaces.',
+    images: ['https://www.rentooze.in/proimg/portableAcblack2.png'],
+    buyPrice: 40000,
+    rentPrices: { daily: 500, weekly: 3000, monthly: 12000 },
+    category: 'Portable ACs',
+    availability: 'available',
+    features: ['1 Ton cooling capacity', 'Portable design', 'Energy efficient'],
+    specifications: { 'Cooling Capacity': '1 Ton' },
+    locations: ['Pune']
+  },
+  {
+    id: 'portable-ac-1-5ton',
+    name: 'Portable AC 1.5 Ton',
+    description: '1.5 Ton portable air conditioner, ideal for medium rooms and offices.',
+    images: ['https://www.rentooze.in/proimg/PORTABLE AC - 1.png'],
+    buyPrice: 45000,
+    rentPrices: { daily: 600, weekly: 3600, monthly: 14400 },
+    category: 'Portable ACs',
+    availability: 'available',
+    features: ['1.5 Ton cooling capacity', 'Portable design', 'Energy efficient'],
+    specifications: { 'Cooling Capacity': '1.5 Ton' },
+    locations: ['Pune']
+  }
+];

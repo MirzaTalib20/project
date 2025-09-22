@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: #5682B1;
+    --color-secondary: #739EC9;
+    --color-accent: #FFE8DB;
+    --color-dark: #000000;
+  }
+
+  html {
+    font-family: 'Inter', sans-serif;
+  }
+
+  .bg-grid-white {
+    background-image: linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px);
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg 
+           border border-[#5682B1]/10 hover:shadow-xl 
+           transition-all duration-300 hover:-translate-y-1;
+  }
+
+  .section-title {
+    @apply text-3xl font-bold text-[#000000] mb-4;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-[#5682B1] to-[#739EC9] 
+           bg-clip-text text-transparent;
+  }
+
+  .btn-primary {
+    @apply px-6 py-3 rounded-xl font-semibold
+           bg-gradient-to-r from-[#5682B1] to-[#739EC9] 
+           text-white shadow-md hover:shadow-lg
+           transform transition-all duration-200
+           hover:-translate-y-0.5;
+  }
+}
+
+@layer utilities {
+  .bg-custom-gradient {
+    background: linear-gradient(135deg, #5682B1, #739EC9);
+  }
+
+  .bg-grid-pattern {
+    background-image: linear-gradient(to right, #5682B1/10 1px, transparent 1px),
+                      linear-gradient(to bottom, #5682B1/10 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  .btn-secondary {
+    @apply bg-[#FFE8DB] hover:bg-white text-[#000000] 
+           rounded-xl px-6 py-3 font-semibold shadow-lg 
+           hover:shadow-xl transition-all duration-300;
+  }
+
+  .mask-gradient-r {
+    mask-image: linear-gradient(to left, transparent, black 20%, black);
+  }
+}
