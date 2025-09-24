@@ -9,6 +9,7 @@ import BookingPage from './pages/BookingPage';
 import AboutContact from './pages/AboutContact';
 import FAQ from './pages/FAQ';
 import BuyRentPage from './pages/BuyRentPage';
+import AdminDashboard from './pages/AdminDashboard';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
             <Route path="/about" element={<AboutContact />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/buy-rent" element={<BuyRentPage />} />
+            <Route path="/admin" element={<AdminDashboard />} />
           </Routes>
         </main>
         <Footer />

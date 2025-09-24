@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ShoppingCart, Calendar, Check, Truck, Shield, 
-  Clock, Star, ChevronLeft, ChevronRight, Info 
+  Clock, Star, ChevronLeft, ChevronRight, Info, Loader 
 } from 'lucide-react';
-import { products } from '../data/products';
+import { productService } from '../services/productService';
 import { Product, RentDuration } from '../types';
 
 type PurchaseMode = 'buy' | 'rent';
@@ -16,22 +16,55 @@ const ProductDetail: React.FC = () => {
   const [rentDuration, setRentDuration] = useState<RentDuration>('daily');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showSpecifications, setShowSpecifications] = useState(false);
+  
+  // Add new state for API handling
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const product = products.find(p => p.id === id) as Product | undefined;
+  useEffect(() => {
+    const fetchProduct = async () => {
+      if (!id) return;
 
-  if (!product) {
+      try {
+        setLoading(true);
+        const response = await productService.getById(id);
+        
+        if (response.success) {
+          setProduct(response.data);
+        } else {
+          setError('Failed to load product');
+        }
+      } catch (err) {
+        console.error('Fetch error:', err);
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [id]);
+
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-xl text-gray-600">Product not found</div>
+        <Loader className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     );
   }
 
-  const getRentPrice = (duration: RentDuration) => {
-  return product.rentPrices ? product.rentPrices[duration] : 0;
-};
+  if (error || !product) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-xl text-gray-600">{error || 'Product not found'}</div>
+      </div>
+    );
+  }
 
   
+
+
   const nextImage = () => {
     setCurrentImageIndex((prev) => 
       prev === product.images.length - 1 ? 0 : prev + 1
@@ -188,24 +221,22 @@ const ProductDetail: React.FC = () => {
                     ) : (
                       <div className="space-y-4">
                         {/* Rent Durations */}
-                        <div className="grid grid-cols-3 gap-4">
-                          {(Object.keys(product.rentPrices || {}) as RentDuration[]).map((duration) => (
-                            <button
-                              key={duration}
-                              onClick={() => setRentDuration(duration)}
-                              className={`p-4 rounded-2xl border text-center transition-all
-                                ${rentDuration === duration
-                                  ? 'bg-gradient-to-r from-[#5682B1]/20 to-[#739EC9]/20 border-[#5682B1] shadow-md'
-                                  : 'border-gray-200 hover:border-[#5682B1]'
-                                }`}
-                            >
-                              <div className="text-sm text-gray-600 capitalize">{duration}</div>
-                              <div className="text-lg font-bold text-[#5682B1]">
-                                ₹{getRentPrice(duration).toLocaleString()}
-                              </div>
-                            </button>
-                          ))}
-                        </div>
+                       <div className="grid grid-cols-1 gap-4">
+  <button
+    onClick={() => setRentDuration('daily')}
+    className={`p-4 rounded-2xl border text-center transition-all
+      ${rentDuration === 'daily'
+        ? 'bg-gradient-to-r from-[#5682B1]/20 to-[#739EC9]/20 border-[#5682B1] shadow-md'
+        : 'border-gray-200 hover:border-[#5682B1]'
+      }`}
+  >
+    <div className="text-sm text-gray-600 capitalize">daily</div>
+    <div className="text-lg font-bold text-[#5682B1]">
+      ₹{product.rentPrices?.daily.toLocaleString()}
+    </div>
+  </button>
+</div>
+
                         <button 
                           className="w-full flex items-center justify-center gap-2 px-6 py-3 
                                      text-white rounded-xl 

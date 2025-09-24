@@ -12,70 +12,50 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showDetails = true }
   const isAvailable = product.availability === 'available';
 
   return (
-    <div className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col h-full">
-      {/* Image */}
-      <div className="relative w-full h-64 overflow-hidden">
+    <div className="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300 flex flex-col h-full overflow-hidden">
+      {/* Image Section */}
+      <div className="relative w-full h-56 md:h-64 bg-gray-50">
         <img
           src={product.images[0]}
           alt={product.name}
-          className="w-full h-full object-contain transition-transform duration-300"
+          className="w-full h-full object-contain p-4 transition-transform duration-300 group-hover:scale-105"
         />
 
         {/* Availability Badge */}
         <div
-          className={`absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-medium flex items-center space-x-1 ${
+          className={`absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 ${
             isAvailable ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
           }`}
         >
-          {isAvailable ? (
-            <>
-              <CheckCircle className="w-3 h-3" />
-              <span>Available</span>
-            </>
-          ) : (
-            <>
-              <Clock className="w-3 h-3" />
-              <span>Booked</span>
-            </>
-          )}
+          {isAvailable ? <CheckCircle className="w-3.5 h-3.5" /> : <Clock className="w-3.5 h-3.5" />}
+          {isAvailable ? 'Available' : 'Booked'}
         </div>
 
         {/* Category Badge */}
-        <div className="absolute top-3 left-3 bg-blue-600 text-white px-2 py-1 rounded-lg text-xs font-medium">
+        <div className="absolute top-3 left-3 bg-blue-600 text-white px-2 py-1 rounded-md text-xs font-semibold shadow-sm">
           {product.category}
         </div>
       </div>
 
-      {/* Content */}
-      <div className="p-5 flex-1 flex flex-col justify-between">
+      {/* Info Section */}
+      <div className="flex flex-col flex-1 p-5">
+        {/* Title + Description */}
         <div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2 hover:text-blue-600 transition-colors">
-            {product.name}
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-1 truncate">{product.name}</h3>
+          <p className="text-sm text-gray-500 line-clamp-2 mb-3">{product.description}</p>
+        </div>
 
-          <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-            {product.description}
-          </p>
+        {/* Rent Pricing */}
+        {product.rentPrices && (
+          <div className="flex items-center gap-1 mb-3 text-gray-800">
+            <IndianRupee className="w-4 h-4 text-blue-600" />
+            <span className="text-xl font-bold">{product.rentPrices.daily.toLocaleString()}</span>
+            <span className="text-sm text-gray-500">/day</span>
+          </div>
+        )}
 
-          {/* Pricing */}
-          {product.rentPrices && (
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center space-x-1">
-                <IndianRupee className="w-4 h-4 text-gray-900" />
-                <span className="text-2xl font-bold text-gray-900">
-                  {product.rentPrices.daily.toLocaleString()}
-                </span>
-                <span className="text-gray-900 text-sm">/day</span>
-              </div>
-              <div className="text-right text-sm text-gray-900">
-                <p>Weekly: ₹{product.rentPrices.weekly.toLocaleString()}</p>
-                <p>Monthly: ₹{product.rentPrices.monthly.toLocaleString()}</p>
-              </div>
-            </div>
-          )}
-
-          {/* Locations */}
-          {product.locations && product.locations.length > 0 && (
+        {/* Location */}
+         {product.locations && product.locations.length > 0 && (
             <div className="flex items-center space-x-1 text-gray-600 mb-4">
               <MapPin className="w-4 h-4" />
               <span className="text-sm">
@@ -85,24 +65,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showDetails = true }
             </div>
           )}
 
-          {/* Features */}
-          {showDetails && product.features && product.features.length > 0 && (
-            <ul className="space-y-1 mb-4">
-              {product.features.slice(0, 3).map((feature, idx) => (
-                <li key={idx} className="text-sm text-gray-600 flex items-center space-x-2">
-                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                  <span>{feature}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        {/* Features */}
+        
 
-        {/* Actions */}
-        <div className="flex gap-2 mt-auto">
+        {/* Action Button */}
+        <div className="mt-auto">
           <Link
-            to={`/product/${product.id}`}
-            className="flex-1 bg-gradient-to-r from-blue-600 to-teal-500 text-white py-2 px-4 rounded-lg font-medium text-center hover:shadow-lg hover:scale-[1.02] transition-all"
+            to={`/product/${product._id}`}
+            className="block w-full bg-gradient-to-r from-blue-600 to-teal-500 text-white text-center font-medium py-2 rounded-lg hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
           >
             View Details
           </Link>

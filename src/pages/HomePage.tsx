@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
@@ -14,16 +14,45 @@ import {
 } from 'lucide-react';
 
 import ReviewCard from '../components/ui/ReviewCard';
+import { productService } from '../services/productService';
 import { products } from '../data/products';
 import { reviews } from '../data/reviews';
 import { locations } from '../data/locations';
 import image1 from '../assest/images/home1.png'
 import image2 from '../assest/images/home2.png'
 // Add new imports for enhanced design
-
+import { Product } from '../types';
 
 const HomePage: React.FC = () => {
-  const featuredProducts = products.filter(p => p.availability === 'available').slice(0, 3);
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await productService.fetchAll();
+        
+        if (response.success) {
+          // Filter available products and take first 3
+          const available = response.data
+            .filter(p => p.availability === 'available')
+            .slice(0, 3);
+          setFeaturedProducts(available);
+        } else {
+          setError('Failed to load products');
+        }
+      } catch (err) {
+        console.error('Fetch error:', err);
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   return (
     <div className="min-h-screen">
@@ -127,7 +156,7 @@ const HomePage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="section-title">
-              Why Choose <span className="gradient-text from-blue-600 to-teal-500">CoolRent</span>?
+              Why Choose <span className="gradient-text from-blue-600 to-teal-500">CoolRentZone</span>?
             </h2>
             <p className="text-[#000000]/70 max-w-2xl mx-auto">
               We provide reliable, efficient cooling solutions with exceptional service quality
@@ -191,105 +220,197 @@ const HomePage: React.FC = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredProducts.map((product, index) => (
-              <motion.div
-                key={product.id}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="card group overflow-hidden"
-              >
-                <div className="relative h-64 mb-6 rounded-xl overflow-hidden">
-                  <img 
-                    src={product.images[0]} 
-                    alt={product.name}
-                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute top-4 right-4 bg-[#FFE8DB] text-[#000000] px-3 py-1 rounded-full text-sm font-medium">
-                    {product.category}
+          {loading ? (
+            <div className="flex justify-center items-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+            </div>
+          ) : error ? (
+            <div className="text-center text-red-600 py-8">
+              {error}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {featuredProducts.map((product, index) => (
+                <motion.div
+                  key={product._id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="card group overflow-hidden"
+                >
+                  <div className="relative h-64 mb-6 rounded-xl overflow-hidden">
+                    <img 
+                      src={product.images[0]} 
+                      alt={product.name}
+                      className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute top-4 right-4 bg-[#FFE8DB] text-[#000000] px-3 py-1 rounded-full text-sm font-medium">
+                      {product.category}
+                    </div>
                   </div>
-                </div>
-                <h3 className="text-xl font-semibold text-[#000000] mb-2">
-                  {product.name}
-                </h3>
-                <p className="text-[#000000]/70 mb-4">
-                  {product.description}
-                </p>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-900 font-semibold  from-blue-600 to-teal-500">
-                    ₹{product.rentPrices?.daily}/day
-                  </span>
-                  <Link to={`/product/${product.id}`} className="btn-primary bg-gradient-to-r from-blue-600 to-teal-500">
-                    View Details
-                  </Link>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                  <h3 className="text-xl font-semibold text-[#000000] mb-2">
+                    {product.name}
+                  </h3>
+                  <p className="text-[#000000]/70 mb-4">
+                    {product.description}
+                  </p>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-900 font-semibold">
+                      ₹{product.rentPrices?.daily}/day
+                    </span>
+                    <Link 
+                      to={`/product/${product._id}`} 
+                      className="btn-primary bg-gradient-to-r from-blue-600 to-teal-500"
+                    >
+                      View Details
+                    </Link>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 {/* Interactive Layered Carousel Section */}
-{/* Premium Layered Carousel Section */}
-<section className="py-24 bg-gray-50">
+{/* Premium Equipment Showcase Carousel */}
+<section className="py-24 bg-gradient-to-b from-gray-50 to-white overflow-hidden">
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div className="text-center mb-16">
       <h2 className="text-3xl font-bold text-gray-900 mb-4">
-        See Our Equipment in Action
+        Featured Equipment Gallery
       </h2>
       <p className="text-gray-600 max-w-2xl mx-auto">
-        Check out our premium cooling solutions at events, offices, and industrial setups
+        Swipe through our premium collection of cooling solutions
       </p>
     </div>
 
-    <div className="relative w-full overflow-hidden">
+    <motion.div 
+      className="relative"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
+    >
+      {/* Main Carousel */}
       <motion.div 
-        className="flex items-center gap-8 cursor-grab"
-        whileTap={{ cursor: "grabbing" }}
+        className="flex space-x-8 pb-12 cursor-grab active:cursor-grabbing"
         drag="x"
-        dragConstraints={{ left: -1000, right: 0 }}
+        dragConstraints={{ right: 0, left: -1200 }}
+        whileTap={{ cursor: "grabbing" }}
       >
-         {[
-          "https://www.rentooze.in/proimg/PEDESTIAL FAN - 2.png",
-          "https://www.rentooze.in/proimg/MIST FAN SILVER - 6.png",
-          "https://www.rentooze.in/proimg/Heater - 2.png",
-          "https://www.rentooze.in/proimg/MIST FAN BLACK - 1.png"
-        ].map((img, i) => (
+        {[
+          {
+            image: "https://www.rentooze.in/proimg/PEDESTIAL FAN - 2.png",
+            title: "Pedestal Fan",
+            category: "Fans"
+          },
+          {
+            image: "https://www.rentooze.in/proimg/MIST FAN SILVER - 6.png",
+            title: "Mist Fan Silver",
+            category: "Mist Fans"
+          },
+          {
+            image: "https://www.rentooze.in/proimg/PORTABLE AC - 1.png",
+            title: "Portable AC",
+            category: "Air Conditioners"
+          },
+          {
+            image: "https://www.rentooze.in/proimg/MIST FAN BLACK - 1.png",
+            title: "Mist Fan Black",
+            category: "Mist Fans"
+          }
+        ].map((item, index) => (
           <motion.div
-            key={i}
-            initial={{ opacity: 0, y: 50, scale: 0.8 }}
-            whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            whileHover={{ scale: 1.08, y: -10, zIndex: 20 }}
-            transition={{ duration: 0.6, delay: i * 0.15 }}
-            className={`relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 rounded-2xl overflow-hidden shadow-2xl`}
-            style={{ zIndex: 10 - i, rotate: i % 2 === 0 ? -4 : 4 }}
+            key={index}
+            className="relative min-w-[300px] sm:min-w-[350px] group"
+            whileHover={{ scale: 1.02 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: index * 0.1 }}
           >
-            <img
-              src={img}
-              alt={`Equipment ${i + 1}`}
-              className="w-full h-full object-cover rounded-2xl"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/0 rounded-2xl"></div>
+            {/* Card Content */}
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+              {/* Image Container */}
+              <div className="relative h-[300px] overflow-hidden">
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                />
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                
+                {/* Category Badge */}
+                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full">
+                  <span className="text-sm font-medium text-gray-900">
+                    {item.category}
+                  </span>
+                </div>
+              </div>
+
+              {/* Info Section */}
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  {item.title}
+                </h3>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="flex items-center justify-between"
+                >
+                  <Link
+                    to="/catalog"
+                    className="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 group"
+                  >
+                    View Details
+                    <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </motion.div>
+              </div>
+            </div>
           </motion.div>
         ))}
       </motion.div>
 
-      {/* Left/Right Floating Shadows */}
-      <div className="absolute top-0 left-0 w-32 h-full bg-gradient-to-r from-gray-50 to-transparent pointer-events-none"></div>
-      <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-gray-50 to-transparent pointer-events-none"></div>
-    </div>
+      {/* Gradient Overlays */}
+      <div className="absolute top-0 left-0 bottom-0 w-32 bg-gradient-to-r from-gray-50 to-transparent pointer-events-none" />
+      <div className="absolute top-0 right-0 bottom-0 w-32 bg-gradient-to-l from-gray-50 to-transparent pointer-events-none" />
 
-    {/* Animated Indicator */}
-    <div className="flex justify-center mt-8 space-x-2">
-      {[...Array(4)].map((_, i) => (
-        <motion.div 
-          key={i} 
-          className="w-3 h-3 bg-blue-500 rounded-full"
-          animate={{ scale: [1, 1.5, 1] }}
-          transition={{ repeat: Infinity, duration: 1, delay: i * 0.2 }}
-        />
-      ))}
-    </div>
+      {/* Scroll Indicator */}
+      <div className="flex justify-center mt-8 gap-2">
+        {[...Array(4)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="w-2 h-2 rounded-full bg-blue-600"
+            animate={{
+              scale: [1, 1.5, 1],
+              opacity: [0.3, 1, 0.3]
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              delay: i * 0.2
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Swipe Instruction */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1 }}
+        className="text-center mt-6 text-gray-500 flex items-center justify-center gap-2"
+      >
+        <span>Swipe to explore</span>
+        <motion.div
+          animate={{ x: [0, 10, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+        >
+          <ArrowRight className="w-4 h-4" />
+        </motion.div>
+      </motion.div>
+    </motion.div>
   </div>
 </section>
 

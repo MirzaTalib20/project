@@ -7,4 +7,10 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
+  server: {
+    proxy: {
+      '/api': 'https://cool-rent-zone-backend.vercel.app'
+    }
+  }
 });
+

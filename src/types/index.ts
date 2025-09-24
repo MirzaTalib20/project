@@ -1,13 +1,12 @@
 export interface Product {
-  id: string;
+  _id: string;
   name: string;
   description: string;
   images: string[];
   buyPrice?: number; // optional because some products may only be rentable
   rentPrices?: {     // optional because some products may only be for buy
     daily: number;
-    weekly: number;
-    monthly: number;
+    
   };
   category: string;
   availability: 'available' | 'booked' | 'out_of_stock';

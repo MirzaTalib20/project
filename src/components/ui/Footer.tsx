@@ -24,7 +24,7 @@ const Footer: React.FC = () => {
                 <Snowflake className="w-6 h-6 text-white" />
               </div>
               <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-teal-400 bg-clip-text text-transparent">
-                CoolRent
+                CoolRentZone
               </span>
             </Link>
             <p className="text-gray-300 text-sm">

@@ -1,12 +1,17 @@
-import React, { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
-import { Filter, Search, X } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Filter, Search, X, Loader } from 'lucide-react';
 import ProductCard from '../components/ui/ProductCard';
-import { products } from '../data/products';
+import { productService } from '../services/productService';
 import { locations } from '../data/locations';
 import { Product } from '../types';
 
 const ProductCatalog: React.FC = () => {
+  // Add new state for API handling
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('');
@@ -15,8 +20,35 @@ const ProductCatalog: React.FC = () => {
   const [sortBy, setSortBy] = useState('name');
   const [showFilters, setShowFilters] = useState(false);
 
-  const categories = [...new Set(products.map(p => p.category))];
+  // Fetch products on component mount
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await productService.fetchAll();
+        
+        if (response.success) {
+          setProducts(response.data);
+        } else {
+          setError('Failed to load products');
+        }
+      } catch (err) {
+        console.error('Fetch error:', err);
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchProducts();
+  }, []);
+
+  // Update categories to use fetched products
+  const categories = useMemo(() => {
+    return [...new Set(products.map(p => p.category))];
+  }, [products]);
+
+  // Update filtered products logic
   const filteredAndSortedProducts = useMemo(() => {
     let filtered = products.filter(product => {
       const matchesSearch =
@@ -62,7 +94,7 @@ const ProductCatalog: React.FC = () => {
     });
 
     return filtered;
-  }, [searchTerm, selectedCategory, selectedLocation, priceRange, availability, sortBy]);
+  }, [products, searchTerm, selectedCategory, selectedLocation, priceRange, availability, sortBy]);
 
   const clearFilters = () => {
     setSearchTerm('');
@@ -80,6 +112,30 @@ const ProductCatalog: React.FC = () => {
     availability,
     searchTerm
   ].filter(Boolean).length;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Loader className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <p className="text-xl text-gray-600 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -219,7 +275,7 @@ const ProductCatalog: React.FC = () => {
           {filteredAndSortedProducts.length > 0 ? (
             filteredAndSortedProducts.map((product, idx) => (
               <motion.div
-                key={product.id}
+                key={product._id}
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: idx * 0.05 }}
@@ -229,7 +285,9 @@ const ProductCatalog: React.FC = () => {
             ))
           ) : (
             <div className="col-span-full text-center py-12">
-              <p className="text-gray-600">No products found. Try adjusting your filters.</p>
+              <p className="text-gray-600">
+                {loading ? 'Loading products...' : 'No products found. Try adjusting your filters.'}
+              </p>
             </div>
           )}
         </div>
