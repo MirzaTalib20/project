@@ -67,4 +67,13 @@
   .mask-gradient-r {
     mask-image: linear-gradient(to left, transparent, black 20%, black);
   }
+
+  .whatsapp-tooltip {
+    @apply invisible group-hover:visible absolute -top-10 right-0 px-3 py-2 bg-gray-900 text-white text-sm rounded whitespace-nowrap;
+  }
+
+  .whatsapp-tooltip::after {
+    content: '';
+    @apply absolute -bottom-1 right-5 w-2 h-2 bg-gray-900 transform rotate-45;
+  }
 }

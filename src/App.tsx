@@ -10,11 +10,13 @@ import AboutContact from './pages/AboutContact';
 import FAQ from './pages/FAQ';
 import BuyRentPage from './pages/BuyRentPage';
 import AdminDashboard from './pages/AdminDashboard';
+import ScrollToTop from './components/ui/ScrollToTop';
 
 function App() {
   return (
     <Router>
       <div className="min-h-screen bg-white">
+        <ScrollToTop />
         <Navbar />
         <main>
           <Routes>
