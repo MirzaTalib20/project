@@ -72,36 +72,56 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Contact Info */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Contact Info</h3>
-            <ul className="space-y-3">
-              <li className="flex items-start space-x-3">
-                <Phone className="w-5 h-5 text-blue-400 mt-0.5" />
-                <div>
-                  <p className="text-gray-300">+91-9999999999</p>
-                  <p className="text-gray-300">+91-8888888888</p>
-                </div>
-              </li>
-              <li className="flex items-start space-x-3">
-                <Mail className="w-5 h-5 text-blue-400 mt-0.5" />
-                <p className="text-gray-300">info@coolrent.com</p>
-              </li>
-              <li className="flex items-start space-x-3">
-                <MapPin className="w-5 h-5 text-blue-400 mt-0.5" />
-                <p className="text-gray-300">
-                  123 Business Park, <br />
-                  Mumbai, Maharashtra 400001
-                </p>
-              </li>
-              <li className="flex items-start space-x-3">
-                <Clock className="w-5 h-5 text-blue-400 mt-0.5" />
-                <div>
-                  <p className="text-gray-300">24/7 Support</p>
-                  <p className="text-gray-400 text-sm">Emergency Service Available</p>
-                </div>
-              </li>
-            </ul>
+           <div className="space-y-6">
+      {/* Section Title */}
+      <h3 className="text-lg font-semibold text-gray-100 tracking-tight">
+        Contact Us
+      </h3>
+
+      {/* Contact List */}
+      <ul className="space-y-5 text-sm">
+        {/* Phone */}
+        <li className="flex items-start space-x-3">
+          <div className="flex-shrink-0 p-2 bg-gradient-to-r from-blue-600 to-teal-500 rounded-lg">
+            <Phone className="w-4 h-4 text-white" />
           </div>
+          <div>
+            <p className="text-gray-300 font-medium">+91 9819570211</p>
+            <p className="text-gray-300 font-medium">+91 9819570211</p>
+          </div>
+        </li>
+
+        {/* Email */}
+        <li className="flex items-start space-x-3">
+          <div className="flex-shrink-0 p-2 bg-gradient-to-r from-blue-600 to-teal-500 rounded-lg">
+            <Mail className="w-4 h-4 text-white" />
+          </div>
+          <p className="text-gray-300 font-medium">rentooze@gmail.com</p>
+        </li>
+
+        {/* Address */}
+        <li className="flex items-start space-x-3">
+          <div className="flex-shrink-0 p-2 bg-gradient-to-r from-blue-600 to-teal-500 rounded-lg">
+            <MapPin className="w-4 h-4 text-white" />
+          </div>
+          <p className="text-gray-300 leading-relaxed">
+            Shop Number 3, LSBI/ Multifit Road, Near Niyati Enchante, New Kalyani Nagar,
+            Digambar Nagar, Wadgaon Sheri, Pune - 411014
+          </p>
+        </li>
+
+        {/* Support Hours */}
+        <li className="flex items-start space-x-3">
+          <div className="flex-shrink-0 p-2 bg-gradient-to-r from-blue-600 to-teal-500 rounded-lg">
+            <Clock className="w-4 h-4 text-white" />
+          </div>
+          <div>
+            <p className="text-gray-300 font-medium">24/7 Support</p>
+            <p className="text-gray-400 text-xs">Emergency Service Available</p>
+          </div>
+        </li>
+      </ul>
+    </div>
         </div>
 
         {/* Bottom Bar */}

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, useAnimation } from 'framer-motion';
 import { 
   ArrowRight, 
   Snowflake, 
@@ -10,19 +10,24 @@ import {
   CheckCircle,
   Star,
   MapPin,
-  Phone
+  Phone,
+  Loader,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 import ReviewCard from '../components/ui/ReviewCard';
 import { productService } from '../services/productService';
-import { products } from '../data/products';
 import { reviews } from '../data/reviews';
 import { locations } from '../data/locations';
+import{gallery } from '../data/gallery';
 import image1 from '../assest/images/home1.png'
 import image2 from '../assest/images/home2.png'
 // Add new imports for enhanced design
 import { Product } from '../types';
 
+import useEmblaCarousel from 'embla-carousel-react';
+import AutoPlay from 'embla-carousel-autoplay';
 const HomePage: React.FC = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,103 +59,130 @@ const HomePage: React.FC = () => {
     fetchProducts();
   }, []);
 
+
+
+
+
+const features = [
+    {
+      title: "Reliable & Fast Delivery",
+      description: "Get same-day delivery on most units. We have a vast inventory across 12+ cities, ensuring you get what you need, when you need it."
+    },
+    {
+      title: "Premium, Vetted Equipment",
+      description: "Every unit is professionally maintained, cleaned, and tested before delivery. We guarantee high-performance, safe, and reliable cooling."
+    },
+    {
+      title: "24/7 Expert Support",
+      description: "Our team is always on standby to help with setup, operation, or any questions you have, ensuring your event or workspace runs smoothly."
+    }
+  ];
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    {
+      loop: true,
+      align: "center",
+      skipSnaps: false,
+      dragFree: false,
+    },
+    [AutoPlay({ delay: 3500, stopOnInteraction: false })]
+  );
+
+  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
+
+  useEffect(() => {
+    if (emblaApi) emblaApi.reInit();
+  }, [emblaApi]);
   return (
     <div className="min-h-screen">
       {/* Enhanced Hero Section */}
-      <section className="relative min-h-[90vh] bg-gradient-to-br from-cyan-600 via-teal-500 to-emerald-400">
-        {/* Decorative Elements */}
-        <div className="absolute inset-0 bg-grid-white/[0.2] bg-[size:20px_20px]" />
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-t from-cyan-600/50 to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
-        </div>
+      
+<section
+      className="relative min-h-screen flex items-center justify-center overflow-hidden 
+      bg-gradient-to-br from-[#e9e9e9] via-[#dcdcdc] to-[#c8c8c8]"
+    >
+      {/* Ambient lighting glows */}
+      <div className="absolute -top-32 -left-20 w-[600px] h-[600px] bg-blue-300/40 blur-[120px] rounded-full" />
+      <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-teal-300/40 blur-[140px] rounded-full" />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              className="space-y-8"
-            >
-              <h1 className="text-6xl md:text-7xl font-extrabold text-white leading-tight tracking-tight">
-                Premium Cooling
-                <span className="block mt-2 bg-gradient-to-r from-cyan-200 to-white bg-clip-text text-transparent">
-                  Solutions
-                </span>
-              </h1>
-              <p className="text-xl text-cyan-50 leading-relaxed max-w-xl">
-                Experience industrial-grade cooling equipment rental with seamless service. Perfect for events, offices, and more.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-6">
-                <Link 
-                  to="/catalog"
-                  className="group relative px-8 py-4 bg-gradient-to-r from-white to-cyan-50 rounded-2xl font-semibold text-cyan-900 shadow-lg shadow-cyan-900/20 hover:shadow-xl hover:shadow-cyan-900/30 transition-all duration-300"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-200 to-cyan-100 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <span className="relative flex items-center justify-center gap-2">
-                    Browse Equipment
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                </Link>
-                <a
-                  href="tel:+91-9999999999"
-                  className="border-2 border-white text-white px-8 py-4 rounded-xl font-semibold hover:bg-white hover:text-blue-600 transition-all duration-300 flex items-center justify-center space-x-2"
-                >
-                  <Phone className="w-5 h-5" />
-                  <span>Call Now</span>
-                </a>
-              </div>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative"
-            >
-              <div className="grid grid-cols-12 gap-4">
-                <div className="col-span-7">
-                  <img
-                    src={image1}
-                    alt="Premium Cooling Equipment"
-                    className="rounded-2xl shadow-2xl transform hover:scale-[1.02] transition-transform duration-300"
-                  />
-                </div>
-                <div className="col-span-5 pt-12">
-                  <img
-                    src={image2}
-                    alt="Professional Installation"
-                    className="rounded-2xl shadow-2xl transform hover:scale-[1.02] transition-transform duration-300"
-                  />
-                </div>
-              </div>
-              
-              {/* Floating Stats Card */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-                className="absolute -bottom-8 left-8 right-8 bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-lg border border-white/20"
-              >
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  {[
-                    { label: "Cities", value: "12+" },
-                    { label: "Customers", value: "2000+" },
-                    { label: "Equipment", value: "500+" }
-                  ].map((stat) => (
-                    <div key={stat.label}>
-                      <div className="text-2xl font-bold text-white">{stat.value}</div>
-                      <div className="text-cyan-100 text-sm">{stat.label}</div>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            </motion.div>
+      <div className="relative z-10 container mx-auto flex flex-col md:flex-row items-center justify-between px-6 md:px-10 py-24 md:py-32">
+        {/* ---------- Left: Text ---------- */}
+        <motion.div
+          initial={{ opacity: 0, y: 25 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="flex-1 text-center md:text-left space-y-6"
+        >
+          <p className="text-gray-600 text-sm uppercase tracking-wide">
+            CoolRentZone — Fast. Professional.
+          </p>
+
+          <h1 className="text-4xl md:text-5xl font-extrabold leading-tight text-gray-900 max-w-lg">
+            Rent Industrial-Grade{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500">
+              Cooling Solutions
+            </span>{" "}
+            for Events & Workspaces
+          </h1>
+
+          <p className="text-gray-600 text-base max-w-md mx-auto md:mx-0">
+            Affordable, fast, and professional cooling equipment guaranteed for
+            every occasion.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 pt-2 justify-center md:justify-start">
+            <button className="inline-flex items-center gap-2 px-6 py-3 rounded-full 
+              bg-gradient-to-r from-blue-600 to-teal-500 text-white font-medium shadow-sm hover:shadow-md 
+              transition-transform hover:scale-[1.03]">
+              Browse Equipment
+              <ArrowRight className="w-4 h-4" />
+            </button>
+
+            <button className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-gray-400/60 
+              text-gray-800 font-medium hover:bg-gray-100 transition-all">
+              <Phone className="w-4 h-4" />
+              Call Now
+            </button>
           </div>
-        </div>
-      </section>
 
+          <p className="text-gray-500 text-sm pt-4">
+            Serving <span className="font-semibold text-gray-800">12+ Cities</span> •{" "}
+            <span className="font-semibold text-gray-800">2000+ Customers</span> •{" "}
+            <span className="font-semibold text-gray-800">500+ Units Available</span>
+          </p>
+        </motion.div>
+
+        {/* ---------- Right: Dual Image Composition ---------- */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, x: 40 }}
+          animate={{ opacity: 1, scale: 1, x: 0 }}
+          transition={{ duration: 0.9, delay: 0.2 }}
+          className="relative flex-1 flex justify-center md:justify-end mt-16 md:mt-0"
+        >
+          {/* Lighting glow */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
+            w-[500px] h-[500px] bg-gradient-to-br from-blue-200/40 to-teal-200/40 
+            blur-[120px] rounded-full" />
+
+          {/* Secondary image - small, subtle, behind */}
+          <img
+            src={image2}
+            alt="Cooling Equipment secondary"
+            className="absolute bottom-6 left-0 w-1/2 max-w-sm opacity-60 scale-90 blur-[0.3px] 
+              rounded-2xl drop-shadow-[0_6px_25px_rgba(0,0,0,0.15)] hidden md:block"
+            loading="lazy"
+          />
+
+          {/* Primary image - main focus */}
+          <img
+            src={image1}
+            alt="Cooling Equipment main"
+            loading="lazy"
+            className="relative w-full max-w-md object-contain drop-shadow-[0_12px_30px_rgba(0,0,0,0.25)]"
+          />
+        </motion.div>
+      </div>
+    </section>
       {/* Enhanced Features Section */}
       <section className="py-24 bg-gradient-to-b from-[#FFE8DB]/20 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -209,276 +241,286 @@ const HomePage: React.FC = () => {
       </section>
 
       {/* Featured Products */}
-      <section className="py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="section-title">
-              Featured <span className="gradient-text from-blue-600 to-teal-500">Equipment</span>
-            </h2>
-            <p className="text-[#000000]/70 max-w-2xl mx-auto">
-              Discover our most popular cooling solutions
-            </p>
+      <section className="py-24 bg-blue-100"> {/* Added a light bg for context */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* ---------- Section Header ---------- */}
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-extrabold text-gray-900 mb-4">
+            Featured <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-teal-500">Equipment</span>
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Discover our most popular cooling solutions, ready for any event.
+          </p>
+        </div>
+        
+        {/* ---------- State Handling: Loading ---------- */}
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <Loader className="animate-spin h-12 w-12 text-blue-600" />
           </div>
-          
-          {loading ? (
-            <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
-            </div>
-          ) : error ? (
-            <div className="text-center text-red-600 py-8">
-              {error}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {featuredProducts.map((product, index) => (
-                <motion.div
-                  key={product._id}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="card group overflow-hidden"
-                >
-                  <div className="relative h-64 mb-6 rounded-xl overflow-hidden">
-                    <img 
-                      src={product.images[0]} 
-                      alt={product.name}
-                      className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute top-4 right-4 bg-[#FFE8DB] text-[#000000] px-3 py-1 rounded-full text-sm font-medium">
-                      {product.category}
-                    </div>
+        ) : 
+        
+        /* ---------- State Handling: Error ---------- */
+        error ? (
+          <div className="text-center text-red-600 py-8 px-6 bg-red-50 rounded-lg">
+            <h3 className="text-lg font-semibold">Oops! Something went wrong.</h3>
+            <p>{error}</p>
+          </div>
+        ) : (
+
+        /* ---------- Success: Product Grid ---------- */
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {featuredProducts.map((product, index) => (
+              <motion.div
+                key={product._id}
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }} // Triggers once when 30% visible
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="bg-white rounded-2xl shadow-lg overflow-hidden group flex flex-col"
+              >
+                {/* Image Container: Matches image_84b4bb.png structure */}
+                <div className="relative h-64 w-full overflow-hidden">
+                  <img 
+                    src={product.images[0]} 
+                    alt={product.name}
+                    className="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-300 ease-in-out"
+                  />
+                  <div className="absolute top-4 right-4 bg-[#FFE8DB] text-[#D95F12] px-3 py-1 rounded-full text-sm font-semibold">
+                    {product.category}
                   </div>
-                  <h3 className="text-xl font-semibold text-[#000000] mb-2">
+                </div>
+
+                {/* Content Container (with padding) */}
+                <div className="p-6 flex flex-col flex-grow">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
                     {product.name}
                   </h3>
-                  <p className="text-[#000000]/70 mb-4">
+                  {/* Fixed height for description to keep cards aligned */}
+                  <p className="text-gray-600 mb-4 flex-grow h-18    overflow-hidden">
                     {product.description}
                   </p>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-900 font-semibold">
-                      ₹{product.rentPrices?.daily}/day
+                  
+                  {/* Card Footer */}
+                  <div className="flex justify-between items-center mt-4">
+                    <span className="text-gray-900 font-bold text-lg">
+                      ₹{product.rentPrices?.daily}
+                      <span className="text-sm font-normal text-gray-500">/day</span>
                     </span>
                     <Link 
                       to={`/product/${product._id}`} 
-                      className="btn-primary bg-gradient-to-r from-blue-600 to-teal-500"
+                      className="px-5 py-2 rounded-full text-white font-medium shadow-sm transition-transform hover:scale-105 bg-gradient-to-r from-blue-600 to-teal-500"
                     >
                       View Details
                     </Link>
                   </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+
+      <section className="relative py-24 bg-gradient-to-br from-[#e9e9e9] via-[#dcdcdc] to-[#c8c8c8] overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 md:px-10">
+        {/* ---------- Header ---------- */}
+        <div className="flex items-center justify-between mb-10">
+          <div>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900">
+              Equipment{" "}
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-teal-500">
+                Gallery
+              </span>
+            </h2>
+            <p className="text-gray-600 mt-2">Explore our cooling equipment lineup.</p>
+          </div>
+          <div className="hidden md:flex gap-3">
+            <button
+               onClick={() => scrollPrev}
+              className="p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition"
+            >
+              <ChevronLeft className="w-5 h-5 text-gray-700" />
+            </button>
+            <button
+               onClick={() => scrollNext}
+              className="p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition"
+            >
+              <ChevronRight className="w-5 h-5 text-gray-700" />
+            </button>
+          </div>
+        </div>
+
+        {/* ---------- Embla Carousel ---------- */}
+        <div className="relative">
+          <div className="overflow-hidden" ref={emblaRef}>
+            <div className="flex gap-6">
+              {gallery.map((item, index) => (
+                <motion.div
+                  key={item._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  viewport={{ once: true, amount: 0.4 }}
+                  className="flex-[0_0_80%] sm:flex-[0_0_45%] md:flex-[0_0_30%] lg:flex-[0_0_20%]
+                    bg-white/90 backdrop-blur-md border border-gray-200/60 
+                    rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 
+                    hover:scale-[1.02] group cursor-grab active:cursor-grabbing"
+                >
+                  {/* Image */}
+                  <div className="relative h-56 bg-gray-50 rounded-t-2xl flex items-center justify-center overflow-hidden">
+                    <img
+                      src={item.imageUrl}
+                      alt={item.name}
+                      className="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute top-4 right-4 bg-gradient-to-r from-blue-50 to-teal-50 text-gray-700 px-3 py-1 rounded-full text-xs font-medium shadow-sm">
+                      {item.category}
+                    </div>
+                  </div>
+
+                  {/* Info */}
+                  <div className="p-5 text-center">
+                    <h3 className="text-base font-semibold text-gray-900 mb-1">
+                      {item.name}
+                    </h3>
+                    <p className="text-xs text-gray-500">High-performance cooling unit</p>
+                  </div>
                 </motion.div>
               ))}
             </div>
-          )}
+          </div>
+
+          {/* Buttons (Mobile) */}
+          <div className="flex md:hidden justify-center gap-3 mt-6">
+            <button
+              onClick={() => scrollPrev}
+              className="p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition"
+            >
+              <ChevronLeft className="w-5 h-5 text-gray-700" />
+            </button>
+            <button
+              onClick={() => scrollNext}
+              className="p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition"
+            >
+              <ChevronRight className="w-5 h-5 text-gray-700" />
+            </button>
+          </div>
         </div>
-      </section>
-{/* Interactive Layered Carousel Section */}
-{/* Premium Equipment Showcase Carousel */}
-<section className="py-24 bg-gradient-to-b from-gray-50 to-white overflow-hidden">
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div className="text-center mb-16">
-      <h2 className="text-3xl font-bold text-gray-900 mb-4">
-        Featured Equipment Gallery
-      </h2>
-      <p className="text-gray-600 max-w-2xl mx-auto">
-        Swipe through our premium collection of cooling solutions
-      </p>
-    </div>
-
-    <motion.div 
-      className="relative"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.6 }}
-    >
-      {/* Main Carousel */}
-      <motion.div 
-        className="flex space-x-8 pb-12 cursor-grab active:cursor-grabbing"
-        drag="x"
-        dragConstraints={{ right: 0, left: -1200 }}
-        whileTap={{ cursor: "grabbing" }}
-      >
-        {[
-          {
-            image: "https://www.rentooze.in/proimg/PEDESTIAL FAN - 2.png",
-            title: "Pedestal Fan",
-            category: "Fans"
-          },
-          {
-            image: "https://www.rentooze.in/proimg/MIST FAN SILVER - 6.png",
-            title: "Mist Fan Silver",
-            category: "Mist Fans"
-          },
-          {
-            image: "https://www.rentooze.in/proimg/PORTABLE AC - 1.png",
-            title: "Portable AC",
-            category: "Air Conditioners"
-          },
-          {
-            image: "https://www.rentooze.in/proimg/MIST FAN BLACK - 1.png",
-            title: "Mist Fan Black",
-            category: "Mist Fans"
-          }
-        ].map((item, index) => (
-          <motion.div
-            key={index}
-            className="relative min-w-[300px] sm:min-w-[350px] group"
-            whileHover={{ scale: 1.02 }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: index * 0.1 }}
-          >
-            {/* Card Content */}
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-              {/* Image Container */}
-              <div className="relative h-[300px] overflow-hidden">
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
-                />
-                {/* Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                
-                {/* Category Badge */}
-                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full">
-                  <span className="text-sm font-medium text-gray-900">
-                    {item.category}
-                  </span>
-                </div>
-              </div>
-
-              {/* Info Section */}
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  {item.title}
-                </h3>
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="flex items-center justify-between"
-                >
-                  <Link
-                    to="/catalog"
-                    className="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 group"
-                  >
-                    View Details
-                    <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </motion.div>
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </motion.div>
-
-      {/* Gradient Overlays */}
-      <div className="absolute top-0 left-0 bottom-0 w-32 bg-gradient-to-r from-gray-50 to-transparent pointer-events-none" />
-      <div className="absolute top-0 right-0 bottom-0 w-32 bg-gradient-to-l from-gray-50 to-transparent pointer-events-none" />
-
-      {/* Scroll Indicator */}
-      <div className="flex justify-center mt-8 gap-2">
-        {[...Array(4)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="w-2 h-2 rounded-full bg-blue-600"
-            animate={{
-              scale: [1, 1.5, 1],
-              opacity: [0.3, 1, 0.3]
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              delay: i * 0.2
-            }}
-          />
-        ))}
       </div>
 
-      {/* Swipe Instruction */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1 }}
-        className="text-center mt-6 text-gray-500 flex items-center justify-center gap-2"
-      >
-        <span>Swipe to explore</span>
-        <motion.div
-          animate={{ x: [0, 10, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-        >
-          <ArrowRight className="w-4 h-4" />
-        </motion.div>
-      </motion.div>
-    </motion.div>
-  </div>
-</section>
+      {/* Lighting effects */}
+      <div className="absolute top-1/2 left-0 w-[400px] h-[400px] bg-blue-300/30 blur-[120px] rounded-full -translate-y-1/2" />
+      <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-teal-300/30 blur-[120px] rounded-full" />
+    </section>
+
 
 
       {/* Locations Served */}
-      <section className="py-16 bg-blue-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Cities We Serve</h2>
-            <p className="text-gray-600">
-              Reliable cooling solutions across major Indian cities
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-            {locations.filter(loc => loc.isActive).map((location) => (
-              <div key={location.id} className="bg-white p-4 rounded-lg shadow-md text-center hover:shadow-lg transition-shadow duration-300">
-                <MapPin className="w-6 h-6 text-blue-600 mx-auto mb-2" />
-                <p className="font-medium text-gray-900">{location.name}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+    <section className="relative py-28 bg-gradient-to-br from-[#f5f7fa] via-[#edf2f7] to-[#e8f1f2] overflow-hidden">
+  {/* Blurred India map background */}
+  <div className="absolute inset-0 flex items-center justify-center opacity-20">
+    <img
+      src="/assets/india-map-outline.png"
+      alt="India map outline"
+      className="w-[800px] h-auto object-contain blur-[2px] select-none pointer-events-none"
+    />
+  </div>
 
-      {/* Benefits Section */}
-      <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">
-                The Smart Choice for Cooling Solutions
-              </h2>
-              <div className="space-y-4">
-                {[
-                  "Free delivery and installation within city limits",
-                  "Professionally maintained and sanitized equipment",
-                  "Flexible rental periods with competitive pricing",
-                  "Emergency replacement service available",
-                  "No maintenance hassles during rental period",
-                  "24/7 customer support and technical assistance"
-                ].map((benefit, index) => (
-                  <div key={index} className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                    <span className="text-gray-700">{benefit}</span>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              <img
-                src="https://images.pexels.com/photos/5691659/pexels-photo-5691659.jpeg?auto=compress&cs=tinysrgb&w=600"
-                alt="Professional Service"
-                className="rounded-xl shadow-2xl"
-              />
-            </motion.div>
-          </div>
+  {/* Blue/teal ambient glows */}
+  <div className="absolute -top-20 left-0 w-[500px] h-[500px] bg-blue-300/30 blur-[120px] rounded-full" />
+  <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-teal-300/30 blur-[120px] rounded-full" />
+
+  {/* Content Layer */}
+  <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 text-center">
+    <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
+      Cities <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-teal-500">We Serve</span>
+    </h2>
+    <p className="text-gray-600 text-lg max-w-2xl mx-auto mb-12">
+      Reliable industrial cooling solutions available across India’s leading cities.
+    </p>
+
+    {/* Glowing map pins overlay (optional aesthetic dots) */}
+    <div className="absolute top-[38%] left-[45%] w-3 h-3 bg-blue-500 rounded-full blur-[2px] animate-pulse"></div>
+    <div className="absolute top-[50%] left-[60%] w-3 h-3 bg-teal-500 rounded-full blur-[2px] animate-pulse delay-200"></div>
+    <div className="absolute top-[60%] left-[35%] w-3 h-3 bg-blue-400 rounded-full blur-[2px] animate-pulse delay-500"></div>
+
+    {/* City tags */}
+    <div className="flex flex-wrap justify-center gap-4 mt-16">
+      {["Mumbai", "Delhi", "Bangalore", "Hyderabad", "Chennai", "Pune", "Ahmedabad", "Kolkata"].map((city) => (
+        <div
+          key={city}
+          className="px-6 py-3 bg-white/70 backdrop-blur-md rounded-full shadow-sm text-gray-800 font-medium hover:bg-blue-50 transition-all duration-300"
+        >
+          {city}
         </div>
-      </section>
+      ))}
+    </div>
+  </div>
+</section>
+      {/* --- smart section--- */}
+<section className="py-24 bg-gradient-to-b from-white to-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          
+          {/* --- Left: Text Content --- */}
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.7, ease: "easeInOut" }}
+          >
+            {/* Heading */}
+            <h2 className="text-4xl font-extrabold text-gray-900 mb-8">
+              The Smart Choice for
+              <br />
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-teal-500">
+                Cooling Solutions
+              </span>
+            </h2>
+
+            {/* Feature List */}
+            <ul className="space-y-6 mb-10">
+              {features.map((feature, index) => (
+                <li key={index} className="flex items-start gap-4">
+                  <CheckCircle className="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
+                  <div>
+                    <h4 className="text-lg font-semibold text-gray-900">{feature.title}</h4>
+                    <p className="text-gray-600">{feature.description}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            {/* Final Link (from the image) */}
+            <Link 
+              to="/catalog" // Update this link to your products page
+              className="inline-flex items-center gap-2 text-lg font-medium text-blue-600 hover:text-blue-700 group"
+            >
+              Explore our full range of products
+              <ArrowRight className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </motion.div>
+
+          {/* --- Right: Image --- */}
+          <motion.div
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.7, delay: 0.2, ease: "easeInOut" }}
+          >
+            <img
+              src={image2}
+              alt="Man installing an industrial cooling unit"
+              className="w-full h-auto rounded-2xl shadow-xl object-cover"
+            />
+          </motion.div>
+
+        </div>
+      </div>
+    </section>
+     
 
       {/* Reviews Section */}
       <section className="py-16 bg-gray-50">
@@ -569,3 +611,4 @@ const HomePage: React.FC = () => {
 };
 
 export default HomePage;
+

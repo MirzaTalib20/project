@@ -54,3 +54,10 @@ export interface Location {
   name: string;
   isActive: boolean;
 }
+
+export interface Gallery {
+  _id: string;
+  imageUrl: string;
+  name: string;
+  category: string;
+}

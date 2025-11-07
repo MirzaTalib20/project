@@ -15,7 +15,10 @@
   html {
     font-family: 'Inter', sans-serif;
   }
-
+html,
+body {
+  overflow-x: hidden;
+}
   .bg-grid-white {
     background-image: linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px),
                       linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px);
