@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { motion, useAnimation } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   ArrowRight,
   Snowflake,
@@ -9,7 +9,6 @@ import {
   Clock,
   CheckCircle,
   Star,
-  MapPin,
   Phone,
   Loader,
   ChevronLeft,
@@ -19,7 +18,6 @@ import {
 import ReviewCard from "../components/ui/ReviewCard";
 import { productService } from "../services/productService";
 import { reviews } from "../data/reviews";
-import { locations } from "../data/locations";
 import { gallery } from "../data/gallery";
 import image1 from "../assest/images/home1.png";
 import image2 from "../assest/images/home2.png";
@@ -349,102 +347,105 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      <section className="relative py-24 bg-gradient-to-br from-[#e9e9e9] via-[#dcdcdc] to-[#c8c8c8] overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          {/* ---------- Header ---------- */}
-          <div className="flex items-center justify-between mb-10">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900">
-                Equipment{" "}
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-teal-500">
-                  Gallery
-                </span>
-              </h2>
-              <p className="text-gray-600 mt-2">
-                Explore our cooling equipment lineup.
-              </p>
-            </div>
-            <div className="hidden md:flex gap-3">
-              <button
-                onClick={() => scrollPrev}
-                className="p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition"
-              >
-                <ChevronLeft className="w-5 h-5 text-gray-700" />
-              </button>
-              <button
-                onClick={() => scrollNext}
-                className="p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition"
-              >
-                <ChevronRight className="w-5 h-5 text-gray-700" />
-              </button>
-            </div>
+       <section className="relative py-20 bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
+        {/* ---------- Header ---------- */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-10 text-center md:text-left">
+          <div>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900">
+              Equipment{" "}
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-teal-500">
+                Gallery
+              </span>
+            </h2>
+            <p className="text-gray-600 mt-2">
+              Explore our premium cooling equipment lineup.
+            </p>
           </div>
 
-          {/* ---------- Embla Carousel ---------- */}
-          <div className="relative">
-            <div className="overflow-hidden" ref={emblaRef}>
-  <div className="flex gap-6 snap-x snap-mandatory overflow-x-auto scroll-smooth">
-    {gallery.map((item, index) => (
-      <motion.div
-        key={item._id}
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: index * 0.1 }}
-        viewport={{ once: true, amount: 0.4 }}
-        className="flex-[0_0_85%] sm:flex-[0_0_45%] md:flex-[0_0_30%] lg:flex-[0_0_20%]
-          bg-white/90 backdrop-blur-md border border-gray-200/60 
-          rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 
-          hover:scale-[1.02] group cursor-grab active:cursor-grabbing
-          snap-center"
-      >
-                    {/* Image */}
-                    <div className="relative h-56 bg-gray-50 rounded-t-2xl flex items-center justify-center overflow-hidden">
-                      <img
-                        src={item.imageUrl}
-                        alt={item.name}
-                        className="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-300"
-                      />
-                      <div className="absolute top-4 right-4 bg-gradient-to-r from-blue-50 to-teal-50 text-gray-700 px-3 py-1 rounded-full text-xs font-medium shadow-sm">
-                        {item.category}
-                      </div>
-                    </div>
-
-                    {/* Info */}
-                    <div className="p-5 text-center">
-                      <h3 className="text-base font-semibold text-gray-900 mb-1">
-                        {item.name}
-                      </h3>
-                      <p className="text-xs text-gray-500">
-                        High-performance cooling unit
-                      </p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-
-            {/* Buttons (Mobile) */}
-            <div className="flex md:hidden justify-center gap-3 mt-6">
-              <button
-                onClick={() => scrollPrev}
-                className="p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition"
-              >
-                <ChevronLeft className="w-5 h-5 text-gray-700" />
-              </button>
-              <button
-                onClick={() => scrollNext}
-                className="p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition"
-              >
-                <ChevronRight className="w-5 h-5 text-gray-700" />
-              </button>
-            </div>
+          <div className="hidden md:flex gap-3 mt-4 md:mt-0">
+            <button
+              onClick={scrollPrev}
+              className="p-3 rounded-full border border-gray-300 hover:bg-gray-100 transition"
+            >
+              <ChevronLeft className="w-5 h-5 text-gray-700" />
+            </button>
+            <button
+              onClick={scrollNext}
+              className="p-3 rounded-full border border-gray-300 hover:bg-gray-100 transition"
+            >
+              <ChevronRight className="w-5 h-5 text-gray-700" />
+            </button>
           </div>
         </div>
 
-        {/* Lighting effects */}
-        <div className="absolute top-1/2 left-0 w-[400px] h-[400px] bg-blue-300/30 blur-[120px] rounded-full -translate-y-1/2" />
-        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-teal-300/30 blur-[120px] rounded-full" />
-      </section>
+        {/* ---------- Carousel ---------- */}
+        <div className="relative">
+          <div className="overflow-hidden" ref={emblaRef}>
+            <div className="flex gap-5 sm:gap-6 md:gap-8 px-4 sm:px-0">
+              {gallery.map((item, index) => (
+               <motion.div
+  key={item._id}
+  initial={{ opacity: 0, y: 20 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.5, delay: index * 0.1 }}
+  viewport={{ once: true }}
+  className="
+    flex-[0_0_88%] sm:flex-[0_0_45%] md:flex-[0_0_30%] lg:flex-[0_0_22%]
+    bg-white/95 border border-gray-200 rounded-2xl shadow-sm
+    hover:shadow-lg hover:scale-[1.02] transition-all duration-300
+    snap-center overflow-hidden backdrop-blur-sm
+  "
+>
+  {/* Image */}
+  <div className="relative h-44 sm:h-48 md:h-56 bg-gray-50 flex items-center justify-center overflow-hidden">
+    <img
+      src={item.imageUrl}
+      alt={item.name}
+      loading="lazy"
+      className="w-auto max-w-[85%] h-auto max-h-full object-contain transform transition-transform duration-300 group-hover:scale-105"
+    />
+    <div className="absolute top-3 right-3 bg-gradient-to-r from-blue-50 to-teal-50 text-gray-700 px-2.5 py-0.5 rounded-full text-[11px] font-medium shadow-sm">
+      {item.category}
+    </div>
+  </div>
+
+  {/* Info */}
+  <div className="p-4 text-center">
+    <h3 className="text-base font-semibold text-gray-900 mb-1 leading-tight">
+      {item.name}
+    </h3>
+    <p className="text-xs text-gray-500 leading-snug">
+      High-performance cooling unit
+    </p>
+  </div>
+</motion.div>
+              ))}
+            </div>
+          </div>
+
+          {/* Buttons for mobile */}
+          <div className="flex md:hidden justify-center gap-3 mt-6">
+            <button
+              onClick={scrollPrev}
+              className="p-3 rounded-full border border-gray-300 hover:bg-gray-100 transition"
+            >
+              <ChevronLeft className="w-5 h-5 text-gray-700" />
+            </button>
+            <button
+              onClick={scrollNext}
+              className="p-3 rounded-full border border-gray-300 hover:bg-gray-100 transition"
+            >
+              <ChevronRight className="w-5 h-5 text-gray-700" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Lighting Effects */}
+      <div className="absolute top-1/2 left-0 w-[400px] h-[400px]  blur-[120px] rounded-full -translate-y-1/2" />
+      <div className="absolute bottom-0 right-0 w-[400px] h-[400px]  blur-[120px] rounded-full" />
+    </section>
 
       {/* Locations Served */}
       <section className="relative py-28 bg-gradient-to-br from-[#f5f7fa] via-[#edf2f7] to-[#e8f1f2] overflow-hidden">

@@ -149,7 +149,7 @@ const AdminDashboard: React.FC = () => {
                   <img
                     src={product.images[0]}
                     alt={product.name}
-                    className="w-full h-48 object-cover rounded-lg mb-4"
+                    className="w-full h-48 object-contain rounded-lg mb-4"
                   />
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
                     {product.name}
