@@ -1,34 +1,36 @@
 import { Gallery } from '../types';
-
+import gallery4 from "../assest/images/MIST FAN BLACK - 1.webp";
+import gallery2 from "../assest/images/MIST FAN SILVER - 6.png";
+import gallery3 from "../assest/images/PORTABLE AC - 1.webp";
+import gallery5 from "../assest/images/jumbo-fan-img.webp";
 export const gallery: Gallery[] = [
   {
     _id: '1',
-    imageUrl: "https://www.rentooze.in/proimg/PEDESTIAL FAN - 2.png",
+    imageUrl: "",
             name: "Pedestal Fan",
             category: "Fans"
   },
   {
     _id: '2',
-    imageUrl: "https://www.rentooze.in/proimg/MIST%20FAN%20SILVER%20-%206.png",
+    imageUrl: gallery2,
             name: "Mist Fan Silver",
             category: "Mist Fans"
   },
   {
     _id: '3',
-
-     imageUrl: "https://www.rentooze.in/proimg/PORTABLE AC - 1.png",
+     imageUrl: gallery3,
             name: "Portable AC",
             category: "Air Conditioners"
   },
   {
     _id: '4',
-    imageUrl: "https://www.rentooze.in/proimg/MIST FAN BLACK - 1.png",
+    imageUrl: gallery4,
             name: "Mist Fan Black",
             category: "Mist Fans"
   },
   {
     _id: '5',
-    imageUrl: "https://www.rentooze.in/proimg/jumbo-fan-img.png",
+    imageUrl: gallery5,
             name: "Jumbo Fan",
             category: "Industrial Fans"
   },

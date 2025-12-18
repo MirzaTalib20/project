@@ -1,24 +1,35 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navbar from './components/ui/Navbar';
-import Footer from './components/ui/Footer';
-import HomePage from './pages/HomePage';
-import ProductCatalog from './pages/ProductCatalog';
-import ProductDetail from './pages/ProductDetail';
-import BookingPage from './pages/BookingPage';
-import AboutContact from './pages/AboutContact';
-import FAQ from './pages/FAQ';
-import BuyRentPage from './pages/BuyRentPage';
-import AdminDashboard from './pages/AdminDashboard';
-import ScrollToTop from './components/ui/ScrollToTop';
+import React, { Suspense, lazy } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+import Navbar from "./components/ui/Navbar";
+import Footer from "./components/ui/Footer";
+import ScrollToTop from "./components/ui/ScrollToTop";
+
+// ✅ Lazy-loaded pages
+const HomePage = lazy(() => import("./pages/HomePage"));
+const ProductCatalog = lazy(() => import("./pages/ProductCatalog"));
+const ProductDetail = lazy(() => import("./pages/ProductDetail"));
+const BookingPage = lazy(() => import("./pages/BookingPage"));
+const AboutContact = lazy(() => import("./pages/AboutContact"));
+const FAQ = lazy(() => import("./pages/FAQ"));
+const BuyRentPage = lazy(() => import("./pages/BuyRentPage"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-white">
-        <ScrollToTop />
-        <Navbar />
-        <main>
+      <ScrollToTop />
+      <Navbar />
+
+      {/* ✅ Suspense is REQUIRED for lazy routes */}
+      <Suspense
+        fallback={
+          <div className="min-h-screen flex items-center justify-center">
+            <span className="text-gray-500 text-sm">Loading…</span>
+          </div>
+        }
+      >
+        <main className="min-h-screen bg-white">
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/catalog" element={<ProductCatalog />} />
@@ -31,8 +42,9 @@ function App() {
             <Route path="/admin" element={<AdminDashboard />} />
           </Routes>
         </main>
-        <Footer />
-      </div>
+      </Suspense>
+
+      <Footer />
     </Router>
   );
 }
