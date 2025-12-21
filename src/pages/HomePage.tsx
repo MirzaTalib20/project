@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo, lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
 // OPTIMIZATION: Use LazyMotion and domAnimation to reduce initial bundle size of Framer Motion
-import { LazyMotion, domAnimation, motion, m } from "framer-motion";
+import { LazyMotion, domAnimation, m,AnimatePresence  } from "framer-motion";
 // OPTIMIZATION: Specific imports from lucide-react can be heavy; ensure tree-shaking works 
 // or use specific paths if the build environment requires it.
 import {
@@ -18,18 +18,19 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-import ReviewCard from "../components/ui/ReviewCard";
+import {ReviewCard} from "../components/ui/ReviewCard";
 import { productService } from "../services/productService";
 import { reviews } from "../data/reviews";
 import { gallery } from "../data/gallery";
 import image1 from "../assest/images/home1.webp";
 import image2 from "../assest/images/home2.webp";
+import image3 from "../assest/images/jumbo-fan-img.webp";
 import { Product } from "../types";
 
 // OPTIMIZATION: Dynamic imports for non-critical carousels to reduce main thread work on load
 import useEmblaCarousel from "embla-carousel-react";
 import AutoPlay from "embla-carousel-autoplay";
-
+const heroImages = [image1, image2,image3];
 const HomePage: React.FC = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -103,82 +104,106 @@ const HomePage: React.FC = () => {
   const cities = useMemo(() => [
     "Mumbai", "Delhi", "Bangalore", "Hyderabad", "Chennai", "Pune", "Ahmedabad", "Kolkata",
   ], []);
+ const [index, setIndex] = useState(0);
 
+  // Auto slide
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % heroImages.length);
+    }, 3500);
+
+    return () => clearInterval(interval);
+  }, []);
   return (
     // OPTIMIZATION: LazyMotion wrapper with domAnimation for reduced JS execution
     <LazyMotion features={domAnimation} strict>
       <div className="min-h-screen">
         {/* --- Hero Section --- */}
-        <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#e9e9e9] via-[#dcdcdc] to-[#c8c8c8]">
-          <div className="absolute -top-32 -left-20 w-[600px] h-[600px] bg-blue-300/40 blur-[120px] rounded-full" />
-          <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-teal-300/40 blur-[140px] rounded-full" />
+          <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#e9e9e9] via-[#dcdcdc] to-[#c8c8c8]">
+      {/* Ambient glows */}
+      <div className="absolute -top-32 -left-20 w-[600px] h-[600px] bg-blue-300/40 blur-[120px] rounded-full" />
+      <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-teal-300/40 blur-[140px] rounded-full" />
 
-          <div className="relative z-10 container mx-auto flex flex-col md:flex-row items-center justify-between px-6 md:px-10 py-24 md:py-32">
-            <m.div
-              initial={{ opacity: 0, y: 25 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="flex-1 text-center md:text-left space-y-6"
-            >
-              <p className="text-gray-600 text-sm uppercase tracking-wide">CoolRentZone — Fast. Professional.</p>
-              <h1 className="text-4xl md:text-5xl font-extrabold leading-tight text-gray-900 max-w-lg">
-                Rent Industrial-Grade{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500">
-                  Cooling Solutions
-                </span>{" "}
-                for Events & Workspaces
-              </h1>
-              <p className="text-gray-600 text-base max-w-md mx-auto md:mx-0">
-                Affordable, fast, and professional cooling equipment guaranteed for every occasion.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 pt-2 justify-center md:justify-start">
-                <Link
-                  to={`/catalog`}
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-blue-600 to-teal-500 text-white font-medium shadow-sm hover:shadow-md transition-transform hover:scale-[1.03]"
-                >
-                  Browse Equipment
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-                <button className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-gray-400/60 text-gray-800 font-medium hover:bg-gray-100 transition-all">
-                  <Phone className="w-4 h-4" />
-                  Call Now
-                </button>
-              </div>
-              <p className="text-gray-500 text-sm pt-4">
-                Serving <span className="font-semibold text-gray-800">12+ Cities</span> • <span className="font-semibold text-gray-800">2000+ Customers</span> • <span className="font-semibold text-gray-800">500+ Units Available</span>
-              </p>
-            </m.div>
+      <div className="relative z-10 container mx-auto flex flex-col md:flex-row items-center justify-between px-6 md:px-10 py-24 md:py-32">
+        {/* ---------------- LEFT CONTENT ---------------- */}
+        <m.div
+          initial={{ opacity: 0, y: 25 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="flex-1 text-center md:text-left space-y-6"
+        >
+          <p className="text-gray-600 text-sm uppercase tracking-wide">
+            CoolRentZone — Fast. Professional.
+          </p>
 
-            <m.div
-              initial={{ opacity: 0, scale: 0.95, x: 40 }}
-              animate={{ opacity: 1, scale: 1, x: 0 }}
-              transition={{ duration: 0.9, delay: 0.2 }}
-              className="relative flex-1 flex justify-center md:justify-end mt-16 md:mt-0"
+          <h1 className="text-4xl md:text-5xl font-extrabold leading-tight text-gray-900 max-w-lg">
+            Rent Industrial-Grade{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-500">
+              Cooling Solutions
+            </span>{" "}
+            for Events & Workspaces
+          </h1>
+
+          <p className="text-gray-600 text-base max-w-md mx-auto md:mx-0">
+            Affordable, fast, and professional cooling equipment guaranteed for every occasion.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 pt-2 justify-center md:justify-start">
+            <Link
+              to="/catalog"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-blue-600 to-teal-500 text-white font-medium shadow-sm hover:shadow-md transition-transform hover:scale-[1.03]"
             >
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-br from-blue-200/40 to-teal-200/40 blur-[120px] rounded-full" />
-              {/* OPTIMIZATION: Added width/height and loading="lazy" for non-LCP image */}
-              <img
-                src={image2}
-                alt="Cooling Equipment secondary"
-                width={300}
-                height={200}
-                className="absolute bottom-6 left-0 w-1/2 max-w-sm opacity-60 scale-90 blur-[0.3px] rounded-2xl drop-shadow-[0_6px_25px_rgba(0,0,0,0.15)] hidden md:block"
-                loading="lazy"
-              />
-              {/* OPTIMIZATION: fetchPriority="high" and loading="eager" for LCP image */}
-              <img
-                src={image1}
-                alt="Cooling Equipment main"
-                width={520}
-                height={420}
-                loading="eager"
-                decoding="async"
-                fetchPriority="high"
-                className="relative w-full max-w-md object-contain drop-shadow-[0_12px_30px_rgba(0,0,0,0.25)]"
-              />
-            </m.div>
+              Browse Equipment
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+
+            <a
+              href="tel:+919999999999"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-gray-400/60 text-gray-800 font-medium hover:bg-gray-100 transition-all"
+            >
+              <Phone className="w-4 h-4" />
+              Call Now
+            </a>
           </div>
-        </section>
+
+          <p className="text-gray-500 text-sm pt-4">
+            Serving <span className="font-semibold text-gray-800">12+ Cities</span> •{" "}
+            <span className="font-semibold text-gray-800">2000+ Customers</span> •{" "}
+            <span className="font-semibold text-gray-800">500+ Units Available</span>
+          </p>
+        </m.div>
+
+        {/* ---------------- RIGHT IMAGE CAROUSEL ---------------- */}
+        <m.div
+          initial={{ opacity: 0, scale: 0.95, x: 40 }}
+          animate={{ opacity: 1, scale: 1, x: 0 }}
+          transition={{ duration: 0.9, delay: 0.2 }}
+          className="relative flex-1 flex justify-center md:justify-end mt-16 md:mt-0"
+        >
+          {/* Glow behind image */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-br from-blue-200/40 to-teal-200/40 blur-[120px] rounded-full" />
+
+          {/* Carousel wrapper */}
+          <div className="relative w-full max-w-md h-[420px]">
+            
+            <AnimatePresence mode="wait">
+              <m.img
+                key={index}
+                src={heroImages[index]}
+                alt="Cooling Equipment"
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.6, ease: "easeInOut" }}
+                className="absolute inset-0 w-full h-full object-contain drop-shadow-[0_12px_30px_rgba(0,0,0,0.25)]"
+              />
+            </AnimatePresence>
+
+         
+          </div>
+        </m.div>
+      </div>
+    </section>
 
         {/* --- Features Section --- */}
         <section className="py-24 bg-gradient-to-b from-[#FFE8DB]/20 to-white">
@@ -348,23 +373,56 @@ const HomePage: React.FC = () => {
           </div>
         </section>
 
-        {/* --- Reviews --- */}
-        <section className="py-16 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">What Our Customers Say</h2>
-            <div className="flex items-center justify-center space-x-1 mb-4">
-              {[...Array(5)].map((_, i) => <Star key={i} className="w-6 h-6 text-yellow-400 fill-current" />)}
-              <span className="ml-2 text-gray-600">4.9/5 from 500+ reviews</span>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left mt-12">
-              {reviews.slice(0, 3).map((review, index) => (
-                <m.div key={review.id} initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: index * 0.1 }}>
-                  <ReviewCard review={review} />
-                </m.div>
-              ))}
-            </div>
-          </div>
-        </section>
+       <section className="py-16 bg-white">
+  <div className="max-w-7xl mx-auto px-4">
+
+    {/* Title */}
+    <h2 className="text-xl font-semibold text-gray-900 mb-4">
+      What Our Customers Say?
+    </h2>
+
+    {/* Rating Bar */}
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border rounded-lg px-4 py-3">
+      <div className="flex items-center flex-wrap gap-3">
+        <span className="font-semibold">Excellent</span>
+
+        <div className="flex items-center gap-0.5">
+          {[...Array(5)].map((_, i) => (
+            <Star
+              key={i}
+              className="w-4 h-4 text-yellow-400 fill-yellow-400"
+            />
+          ))}
+        </div>
+
+        <span className="font-medium">4.9</span>
+
+        <span className="text-sm text-gray-500">
+          Based on <span className="font-medium">103 reviews</span>
+        </span>
+
+        <img
+          src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png"
+          className="h-5"
+          alt="Google"
+        />
+      </div>
+
+      <button className="bg-blue-600 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-700">
+        Write a review
+      </button>
+    </div>
+
+    {/* Reviews Grid */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+      {reviews.slice(0, 8).map((review) => (
+        <ReviewCard key={review.id} review={review} />
+      ))}
+    </div>
+
+  </div>
+</section>
+
 
         {/* --- WhatsApp Float Button --- */}
         {/* OPTIMIZATION: Conditionality ensures this non-critical UI doesn't interfere with initial hydration/paint */}
