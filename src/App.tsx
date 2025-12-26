@@ -1,11 +1,11 @@
-import React, { Suspense, lazy } from "react";
+import React, { Suspense, lazy, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Navbar from "./components/ui/Navbar";
 import Footer from "./components/ui/Footer";
 import ScrollToTop from "./components/ui/ScrollToTop";
 
-// ✅ Lazy-loaded pages
+// Lazy pages
 const HomePage = lazy(() => import("./pages/HomePage"));
 const ProductCatalog = lazy(() => import("./pages/ProductCatalog"));
 const ProductDetail = lazy(() => import("./pages/ProductDetail"));
@@ -16,12 +16,17 @@ const BuyRentPage = lazy(() => import("./pages/BuyRentPage"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 
 function App() {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
   return (
     <Router>
       <ScrollToTop />
-      <Navbar />
 
-      {/* ✅ Suspense is REQUIRED for lazy routes */}
+      <Navbar
+        collapsed={sidebarCollapsed}
+        setCollapsed={setSidebarCollapsed}
+      />
+
       <Suspense
         fallback={
           <div className="min-h-screen flex items-center justify-center">
@@ -29,7 +34,12 @@ function App() {
           </div>
         }
       >
-        <main className="min-h-screen bg-white">
+        <main
+          className={`
+            transition-[margin] duration-300 ease-in-out
+            ${sidebarCollapsed ? "md:ml-[72px]" : "md:ml-[260px]"}
+          `}
+        >
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/catalog" element={<ProductCatalog />} />

@@ -1,149 +1,186 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Snowflake, Phone } from "lucide-react";
+import {
+  Menu,
+  X,
+  Snowflake,
+  Phone,
+  Home,
+  Box,
+  Info,
+  HelpCircle,
+  Mail,
+  ChevronLeft,
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const navLinks = [
-  { path: "/", label: "Home" },
-  { path: "/catalog", label: "Products" },
-  { path: "/about", label: "About" },
-  { path: "/faq", label: "FAQ" },
-  { path: "/contact", label: "Contact Us" },
+  { path: "/", label: "Home", icon: Home },
+  { path: "/catalog", label: "Products", icon: Box },
+  { path: "/about", label: "About", icon: Info },
+  { path: "/faq", label: "FAQ", icon: HelpCircle },
+  { path: "/contact", label: "Contact", icon: Mail },
 ];
 
-const Navbar: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [visible, setVisible] = useState(true);
+const Navbar = ({
+  collapsed,
+  setCollapsed,
+}: {
+  collapsed: boolean;
+  setCollapsed: (v: boolean) => void;
+}) => {
+
   const location = useLocation();
-  const lastScrollY = useRef(0);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const isActive = (path: string) => location.pathname === path;
 
-  /* ---------------- Scroll Hide / Show Logic ---------------- */
-  useEffect(() => {
-    const handleScroll = () => {
-      if (isOpen) return; // IMPORTANT: don't hide while mobile menu is open
-
-      const currentScrollY = window.scrollY;
-
-      if (currentScrollY > lastScrollY.current && currentScrollY > 80) {
-        // scrolling DOWN
-        setVisible(false);
-      } else {
-        // scrolling UP or stopped
-        setVisible(true);
-      }
-
-      lastScrollY.current = currentScrollY;
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [isOpen]);
-
-  /* ---------------- Close Mobile Menu on Route Change ---------------- */
-  useEffect(() => {
-    setIsOpen(false);
-  }, [location.pathname]);
-
+  /* ================= DESKTOP SIDEBAR ================= */
   return (
-    <nav
-      className={`fixed top-4 left-1/2 -translate-x-1/2 z-50
-      transition-all duration-300
-      ${
-        visible
-          ? "opacity-100 translate-y-0"
-          : "opacity-0 -translate-y-10 pointer-events-none"
-      }`}
-    >
-      {/* ---------------- Main Navbar ---------------- */}
-      <div
-        className="flex items-center justify-between px-6 py-3 rounded-full
-        bg-white/40 backdrop-blur-2xl border border-white/30
-        shadow-[0_8px_32px_rgba(31,38,135,0.15)]
-        max-w-5xl w-[90vw]"
+    <>
+      <motion.aside
+        animate={{ width: collapsed ? 72 : 260 }}
+        transition={{ type: "spring", stiffness: 260, damping: 25 }}
+        className="hidden md:fixed md:inset-y-0 md:left-0 md:z-50
+        md:flex bg-white/70 backdrop-blur-xl border-r border-gray-200"
       >
-        {/* Logo */}
-        <Link to="/" className="flex items-center space-x-2">
-          <div className="bg-gradient-to-br from-blue-600 to-teal-400 p-2 rounded-lg">
-            <Snowflake className="w-5 h-5 text-white" />
+        <div className="flex flex-col w-full h-full px-3 py-4">
+          {/* Logo + Collapse */}
+          <div className="flex items-center justify-between mb-8">
+            <Link to="/" className="flex items-center gap-3 px-2">
+              <div className="bg-gradient-to-br from-blue-600 to-teal-500 p-2 rounded-lg">
+                <Snowflake className="w-5 h-5 text-white" />
+              </div>
+
+              <AnimatePresence>
+                {!collapsed && (
+                  <motion.span
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -10 }}
+                    className="text-lg font-semibold text-gray-800"
+                  >
+                    CoolRentZone
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </Link>
+
+            <button
+              onClick={() => setCollapsed(!collapsed)}
+              className="p-2 rounded-lg hover:bg-gray-100 transition"
+            >
+              <ChevronLeft
+                className={`w-5 h-5 transition-transform ${
+                  collapsed ? "rotate-180" : ""
+                }`}
+              />
+            </button>
           </div>
-          <span className="text-lg font-semibold text-gray-800">
-            CoolRentZone
-          </span>
-        </Link>
 
-        {/* Desktop Links */}
-        <div className="hidden md:flex items-center space-x-8">
-          {navLinks.map(link => (
-            <Link
-              key={link.path}
-              to={link.path}
-              className={`text-sm font-medium transition-colors ${
-                isActive(link.path)
-                  ? "text-blue-600"
-                  : "text-gray-700 hover:text-blue-600"
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </div>
+          {/* Navigation */}
+          <nav className="flex flex-col gap-2 flex-1">
+            {navLinks.map(({ path, label, icon: Icon }) => (
+              <div key={path} className="relative group">
+                <Link
+                  to={path}
+                  className={`flex items-center gap-3 px-3 py-3 rounded-xl
+                  transition-all duration-200
+                  ${
+                    isActive(path)
+                      ? "bg-blue-100 text-blue-700"
+                      : "text-gray-700 hover:bg-gray-100"
+                  }`}
+                >
+                  <motion.div
+                    whileHover={{ scale: 1.15 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Icon className="w-5 h-5 shrink-0" />
+                  </motion.div>
 
-        {/* Call Button (Desktop) */}
-        <a
-          href="tel:+919999999999"
-          className="hidden md:inline-flex items-center gap-2 px-5 py-2 rounded-full
-          bg-gradient-to-r from-blue-600 to-teal-500
-          text-white text-sm font-medium shadow-sm hover:shadow-md"
-        >
-          <Phone className="w-4 h-4" />
-          Call Now
-        </a>
+                  <AnimatePresence>
+                    {!collapsed && (
+                      <motion.span
+                        initial={{ opacity: 0, x: -8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -8 }}
+                        className="text-sm font-medium"
+                      >
+                        {label}
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </Link>
 
-        {/* Mobile Toggle */}
-        <button
-          onClick={() => setIsOpen(prev => !prev)}
-          className="md:hidden p-2 rounded-md text-gray-700"
-          aria-label="Toggle menu"
-        >
-          {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
-      </div>
+                {/* Tooltip */}
+                {collapsed && (
+                  <div
+                    className="absolute left-full ml-3 top-1/2 -translate-y-1/2
+                    px-3 py-1.5 rounded-md bg-gray-900 text-white text-xs
+                    opacity-0 group-hover:opacity-100 pointer-events-none
+                    transition shadow-lg whitespace-nowrap"
+                  >
+                    {label}
+                  </div>
+                )}
+              </div>
+            ))}
+          </nav>
 
-      {/* ---------------- Mobile Menu ---------------- */}
-      {isOpen && (
-        <div
-          className="md:hidden mt-3 bg-white/80 backdrop-blur-xl
-          rounded-2xl shadow-lg border border-white/40
-          px-4 py-4 space-y-2 animate-in fade-in slide-in-from-top-2"
-        >
-          {navLinks.map(link => (
-            <Link
-              key={link.path}
-              to={link.path}
-              className={`block px-3 py-2 rounded-lg text-sm font-medium
-              ${
-                isActive(link.path)
-                  ? "text-blue-600 bg-blue-50"
-                  : "text-gray-700 hover:text-blue-600 hover:bg-blue-50"
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
-
-          <a
+          {/* Call Button */}
+          <motion.a
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             href="tel:+919999999999"
-            className="flex items-center justify-center gap-2 mt-3
-            rounded-full bg-gradient-to-r from-blue-600 to-teal-500
-            text-white py-2 text-sm font-medium"
+            className="mt-4 flex items-center justify-center gap-2 px-3 py-3 rounded-xl
+            bg-gradient-to-r from-blue-600 to-teal-500 text-white text-sm font-medium"
           >
             <Phone className="w-4 h-4" />
-            Call Now
-          </a>
+            {!collapsed && <span>Call Now</span>}
+          </motion.a>
         </div>
-      )}
-    </nav>
+      </motion.aside>
+
+      {/* ================= MOBILE NAVBAR ================= */}
+      <nav className="md:hidden fixed top-4 left-1/2 -translate-x-1/2 z-50">
+        <div
+          className="flex items-center justify-between px-6 py-3 rounded-full
+          bg-white/40 backdrop-blur-2xl border border-white/30
+          shadow-[0_8px_32px_rgba(31,38,135,0.15)]
+          w-[90vw]"
+        >
+          <Link to="/" className="flex items-center gap-2">
+            <Snowflake className="w-5 h-5 text-blue-600" />
+            <span className="font-semibold">CoolRentZone</span>
+          </Link>
+
+          <button onClick={() => setMobileOpen(!mobileOpen)}>
+            {mobileOpen ? <X /> : <Menu />}
+          </button>
+        </div>
+
+        {mobileOpen && (
+          <div className="mt-3 bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg px-4 py-4">
+            {navLinks.map(link => (
+              <Link
+                key={link.path}
+                to={link.path}
+                onClick={() => setMobileOpen(false)}
+                className={`block px-3 py-2 rounded-lg text-sm font-medium
+                ${
+                  isActive(link.path)
+                    ? "bg-blue-100 text-blue-700"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+        )}
+      </nav>
+    </>
   );
 };
 

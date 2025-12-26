@@ -1,8 +1,8 @@
 import { Gallery } from '../types';
-import gallery4 from "../assest/images/MIST FAN BLACK - 1.webp";
-import gallery2 from "../assest/images/MIST FAN SILVER - 6.png";
-import gallery3 from "../assest/images/PORTABLE AC - 1.webp";
-import gallery5 from "../assest/images/jumbo-fan-img.webp";
+import gallery4 from "../assets/images/MIST FAN BLACK - 1.webp";
+import gallery2 from "../assets/images/MIST FAN SILVER - 6.png";
+import gallery3 from "../assets/images/PORTABLE AC - 1.webp";
+import gallery5 from "../assets/images/jumbo-fan-img.webp";
 export const gallery: Gallery[] = [
   {
     _id: '1',

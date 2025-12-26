@@ -5,6 +5,7 @@ import ProductCard from '../components/ui/ProductCard';
 import { productService } from '../services/productService';
 import { locations } from '../data/locations';
 import { Product } from '../types';
+import { useSearchParams } from "react-router-dom";
 
 const ProductCatalog: React.FC = () => {
   // Add new state for API handling
@@ -19,7 +20,12 @@ const ProductCatalog: React.FC = () => {
   const [availability, setAvailability] = useState('');
   const [sortBy, setSortBy] = useState('name');
   const [showFilters, setShowFilters] = useState(false);
+const [searchParams] = useSearchParams();
+const searchQuery = searchParams.get("search") || "";
 
+const filteredProducts = products.filter((product) =>
+  product.name.toLowerCase().includes(searchQuery.toLowerCase())
+);
   // Fetch products on component mount
   useEffect(() => {
     const fetchProducts = async () => {
