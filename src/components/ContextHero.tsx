@@ -41,7 +41,7 @@ const ContextHero = () => {
     stopAutoSlide();
     intervalRef.current = setInterval(() => {
       setIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
-    }, 3500);
+    }, 6000);
   };
 
   const stopAutoSlide = () => {
@@ -96,29 +96,30 @@ const ContextHero = () => {
               }}
             >
               {heroContexts.map((item, i) => (
-                <div
-                  key={i}
-                  className={`
-                    flex-shrink-0 px-3
-                    ${visibleCards === 1 ? "w-full" : ""}
-                    ${visibleCards === 2 ? "w-1/2" : ""}
-                    ${visibleCards === 4 ? "w-1/4" : ""}
-                  `}
-                >
-                  <div className="relative rounded-2xl overflow-hidden shadow-lg">
-                    <img
-                      src={item.image}
-                      alt={item.label}
-                      loading="lazy"
-                      decoding="async"
-                      className="w-full h-[260px] object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-black/10 to-transparent" />
-                    <div className="absolute bottom-4 left-4 bg-black/55 backdrop-blur text-white px-4 py-1.5 rounded-full text-sm font-medium">
-                      {item.label}
-                    </div>
-                  </div>
-                </div>
+              <div
+  key={i}
+  className={`
+    flex-shrink-0 px-3
+    ${visibleCards === 1 ? "w-full" : ""}
+    ${visibleCards === 2 ? "w-1/2" : ""}
+    ${visibleCards === 4 ? "w-1/4" : ""}
+  `}
+>
+  <div className="relative rounded-2xl overflow-hidden shadow-lg aspect-video max-h-[210px] ml-4">
+    <img
+      src={item.image}
+      alt={item.label}
+      loading="lazy"
+      decoding="async"
+      className="w-full h-[180px] sm:h-[200px] md:h-full object-cover"
+    />
+    <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-black/10 to-transparent" />
+    <div className="absolute bottom-4 left-4 bg-black/55 backdrop-blur text-white px-4 py-1.5 rounded-full text-sm font-medium">
+      {item.label}
+    </div>
+  </div>
+</div>
+
               ))}
             </m.div>
           </div>
