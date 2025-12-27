@@ -1,80 +1,86 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Product } from '../../types';
-import { IndianRupee, MapPin, CheckCircle, Clock } from 'lucide-react';
+import React from "react";
+import { Link } from "react-router-dom";
+import { Product } from "../../types";
 
 interface ProductCardProps {
   product: Product;
-  showDetails?: boolean;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, showDetails = true }) => {
-  const isAvailable = product.availability === 'available';
-
+const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   return (
-    <div className="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300 flex flex-col h-full overflow-hidden">
-      {/* Image Section */}
-      <div className="relative w-full h-56 md:h-64 bg-gray-50">
+    <div
+      className="
+        group
+        bg-white rounded-3xl
+        border border-gray-200/60
+        hover:border-gray-300/70
+        shadow-[0_4px_16px_rgba(0,0,0,0.04)]
+        hover:shadow-[0_10px_30px_rgba(0,0,0,0.08)]
+        transition-all duration-300
+        w-full
+        overflow-hidden
+      "
+    >
+      {/* IMAGE */}
+      <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 h-44 flex items-center justify-center">
         <img
           src={product.images[0]}
           alt={product.name}
-          className="w-full h-full object-contain p-4 transition-transform duration-300 group-hover:scale-105"
+          className="
+            max-h-full object-contain
+            transition-transform duration-500
+            group-hover:scale-110
+          "
         />
-
-        {/* Availability Badge */}
-        <div
-          className={`absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 ${
-            isAvailable ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-          }`}
-        >
-          {isAvailable ? <CheckCircle className="w-3.5 h-3.5" /> : <Clock className="w-3.5 h-3.5" />}
-          {isAvailable ? 'Available' : 'Booked'}
-        </div>
-
-        {/* Category Badge */}
-        <div className="absolute top-3 left-3 bg-blue-600 text-white px-2 py-1 rounded-md text-xs font-semibold shadow-sm">
-          {product.category}
-        </div>
+        <div className="absolute inset-0 bg-black/[0.03] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
 
-      {/* Info Section */}
-      <div className="flex flex-col flex-1 p-5">
-        {/* Title + Description */}
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-1 truncate">{product.name}</h3>
-          <p className="text-sm text-gray-500 line-clamp-2 mb-3">{product.description}</p>
-        </div>
+      {/* CONTENT */}
+      <div className="px-4 py-4 flex flex-col h-full">
+        {/* Name */}
+        <h3 className="text-sm font-semibold text-gray-900 leading-snug line-clamp-1">
+          {product.name}
+        </h3>
 
-        {/* Rent Pricing */}
-        {product.rentPrices && (
-          <div className="flex items-center gap-1 mb-3 text-gray-800">
-            <IndianRupee className="w-4 h-4 text-blue-600" />
-            <span className="text-xl font-bold">{product.rentPrices.daily.toLocaleString()}</span>
-            <span className="text-sm text-gray-500">/day</span>
-          </div>
-        )}
+        {/* Description */}
+        <p className="text-xs text-gray-600 mt-1 line-clamp-2">
+          {product.description}
+        </p>
 
-        {/* Location */}
-         {product.locations && product.locations.length > 0 && (
-            <div className="flex items-center space-x-1 text-gray-600 mb-4">
-              <MapPin className="w-4 h-4" />
-              <span className="text-sm">
-                Available in {product.locations.slice(0, 2).join(', ')}
-                {product.locations.length > 2 && ` +${product.locations.length - 2} more`}
-              </span>
-            </div>
-          )}
+        {/* Footer */}
+        <div className="mt-4 flex items-center justify-between gap-3">
+          {/* Rental badge */}
+          <span
+            className="
+              inline-flex items-center
+              whitespace-nowrap
+              text-[11px] font-medium
+              text-blue-600
+              bg-blue-50/70
+              px-2.5 py-1
+              rounded-full
+            "
+          >
+            Rental · Per Day
+          </span>
 
-        {/* Features */}
-        
-
-        {/* Action Button */}
-        <div className="mt-auto">
+          {/* RENT BUTTON */}
           <Link
             to={`/product/${product._id}`}
-            className="block w-full bg-gradient-to-r from-blue-600 to-teal-500 text-white text-center font-medium py-2 rounded-lg hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
+            className="
+              whitespace-nowrap
+              px-4 py-1.5
+              rounded-full
+              bg-blue-600
+              text-white
+              text-xs font-semibold
+              transition-all duration-300
+              hover:bg-blue-700
+              hover:scale-105
+              active:scale-95
+            "
           >
-            View Details
+            Rent
           </Link>
         </div>
       </div>

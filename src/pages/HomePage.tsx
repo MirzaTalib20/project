@@ -1,14 +1,11 @@
 import React, {
-  useState,
   useEffect,
   useCallback,
   useMemo,
-  lazy,
-  Suspense,
 } from "react";
 import { Link } from "react-router-dom";
 // OPTIMIZATION: Use LazyMotion and domAnimation to reduce initial bundle size of Framer Motion
-import { LazyMotion, domAnimation, m, AnimatePresence } from "framer-motion";
+import { LazyMotion, domAnimation, m } from "framer-motion";
 // OPTIMIZATION: Specific imports from lucide-react can be heavy; ensure tree-shaking works
 // or use specific paths if the build environment requires it.
 import {
@@ -19,58 +16,21 @@ import {
   Clock,
   CheckCircle,
   Star,
-  Phone,
-  Loader,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
 
 import { ReviewCard } from "../components/ui/ReviewCard";
-import { productService } from "../services/productService";
 import { reviews } from "../data/reviews";
 import { gallery } from "../data/gallery";
 
-import { Product } from "../types";
+import { products } from "../data/products";
 
 // OPTIMIZATION: Dynamic imports for non-critical carousels to reduce main thread work on load
 import useEmblaCarousel from "embla-carousel-react";
 import AutoPlay from "embla-carousel-autoplay";
 import ContextHero from "../components/ContextHero";
 const HomePage: React.FC = () => {
-  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  // OPTIMIZATION: Delay showing non-critical floating elements to improve TBT
-  const [showFloatingElements, setShowFloatingElements] = useState(false);
-
-  useEffect(() => {
-    // OPTIMIZATION: Defer data fetching and non-critical logic slightly to allow LCP to paint first
-    const timer = setTimeout(() => {
-      const fetchProducts = async () => {
-        try {
-          const response = await productService.fetchAll();
-          if (response.success) {
-            const available = response.data
-              .filter((p) => p.availability === "available")
-              .slice(0, 3);
-            setFeaturedProducts(available);
-          } else {
-            setError("Failed to load products");
-          }
-        } catch (err) {
-          console.error("Fetch error:", err);
-          setError(err instanceof Error ? err.message : "An error occurred");
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetchProducts();
-      setShowFloatingElements(true);
-    }, 100);
-
-    return () => clearTimeout(timer);
-  }, []);
-
   // OPTIMIZATION: Memoize static data to prevent recreation on re-renders
   const features = useMemo(
     () => [
@@ -103,6 +63,9 @@ const HomePage: React.FC = () => {
     },
     [AutoPlay({ delay: 3500, stopOnInteraction: false })]
   );
+  const featuredProducts = useMemo(() => {
+    return products.filter((p) => p.availability === "available").slice(0, 4);
+  }, []);
 
   const scrollPrev = useCallback(
     () => emblaApi && emblaApi.scrollPrev(),
@@ -201,84 +164,108 @@ const HomePage: React.FC = () => {
         </section>
 
         {/* --- Featured Products --- */}
-        <section className="py-24 bg-blue-100">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl font-extrabold text-gray-900 mb-4">
-                Featured{" "}
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-teal-500">
-                  Equipment
-                </span>
-              </h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Discover our most popular cooling solutions, ready for any
-                event.
-              </p>
-            </div>
-            {loading ? (
-              <div className="flex justify-center items-center h-64">
-                <Loader className="animate-spin h-12 w-12 text-blue-600" />
-              </div>
-            ) : error ? (
-              <div className="text-center text-red-600 py-8 px-6 bg-red-50 rounded-lg">
-                <h3 className="text-lg font-semibold">
-                  Oops! Something went wrong.
-                </h3>
-                <p>{error}</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {featuredProducts.map((product, index) => (
-                  <m.div
-                    key={product._id}
-                    initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className="bg-white rounded-2xl shadow-lg overflow-hidden group flex flex-col"
-                  >
-                    <div className="relative h-64 w-full overflow-hidden">
-                      {/* OPTIMIZATION: Image height/width + lazy for below-fold items */}
-                      <img
-                        src={product.images[0]}
-                        alt={product.name}
-                        width={400}
-                        height={256}
-                        loading="lazy"
-                        className="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-300 ease-in-out"
-                      />
-                      <div className="absolute top-4 right-4 bg-[#FFE8DB] text-[#D95F12] px-3 py-1 rounded-full text-sm font-semibold">
-                        {product.category}
-                      </div>
-                    </div>
-                    <div className="p-6 flex flex-col flex-grow">
-                      <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                        {product.name}
-                      </h3>
-                      <p className="text-gray-600 mb-4 flex-grow h-18 overflow-hidden">
-                        {product.description}
-                      </p>
-                      <div className="flex justify-between items-center mt-4">
-                        <span className="text-gray-900 font-bold text-lg">
-                          ₹{product.rentPrices?.daily}
-                          <span className="text-sm font-normal text-gray-500">
-                            /day
-                          </span>
-                        </span>
-                        <Link
-                          to={`/product/${product._id}`}
-                          className="px-5 py-2 rounded-full text-white font-medium shadow-sm transition-transform hover:scale-105 bg-gradient-to-r from-blue-600 to-teal-500"
-                        >
-                          View Details
-                        </Link>
-                      </div>
-                    </div>
-                  </m.div>
-                ))}
-              </div>
-            )}
+      {/* --- Featured Products (Recommendation Style) --- */}
+<section className="py-16 md:py-20 bg-white">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    {/* Header */}
+    <div className="flex items-center justify-between mb-6 md:mb-8">
+      <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
+        Explore our recommendations
+      </h2>
+
+      <Link
+        to="/catalog"
+        className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+      >
+        View all →
+      </Link>
+    </div>
+
+    {/* GRID (NO SCROLL) */}
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+      {featuredProducts.map((product) => (
+        <div
+          key={product._id}
+          className="
+            bg-gray-50
+            rounded-2xl
+            border border-gray-200/60
+            hover:shadow-lg
+            transition-all duration-300
+            flex flex-col
+          "
+        >
+          {/* Image */}
+          <div className="relative h-36 sm:h-40 flex items-center justify-center bg-white rounded-t-2xl">
+            <img
+              src={product.images[0]}
+              alt={product.name}
+              loading="lazy"
+              className="h-full object-contain p-4"
+            />
+
+            {/* Category */}
+            <span className="absolute top-2 right-2 text-[10px] bg-gray-100 px-2 py-0.5 rounded-full text-gray-600">
+              {product.category}
+            </span>
           </div>
-        </section>
+
+          {/* Info */}
+          <div className="p-4 flex flex-col flex-grow">
+            <h3 className="text-sm font-semibold text-gray-900 leading-tight line-clamp-2">
+              {product.name}
+            </h3>
+
+            <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+              {product.description}
+            </p>
+
+            {/* Price */}
+            <div className="mt-3 text-gray-900 font-bold text-sm">
+              ₹{product.rentPrices?.daily}
+              <span className="text-xs font-normal text-gray-500"> / day</span>
+            </div>
+
+            {/* Actions */}
+            <div className="mt-4 flex gap-2">
+              <Link
+                to={`/product/${product._id}`}
+                className="
+                  flex-1 text-xs font-semibold
+                  bg-blue-600 text-white
+                  py-2 rounded-full
+                  text-center
+                  hover:bg-blue-700
+                  transition
+                "
+              >
+                Rent
+              </Link>
+
+              <Link
+                to={`/product/${product._id}`}
+                className="
+                  flex-1 text-xs font-medium
+                  border border-gray-300
+                  py-2 rounded-full
+                  text-center
+                  text-gray-700
+                  hover:bg-gray-100
+                  transition
+                "
+              >
+                Details
+              </Link>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+
 
         {/* --- Gallery Section --- */}
         <section className="relative py-20 bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 overflow-hidden">
@@ -433,7 +420,7 @@ const HomePage: React.FC = () => {
                 transition={{ duration: 0.7, delay: 0.2 }}
               >
                 <img
-                  src="{}"
+                  src="/assets/images/PORTABLE AC - 1.webp"
                   alt="Man installing an industrial cooling unit"
                   width={600}
                   height={400}
@@ -495,7 +482,7 @@ const HomePage: React.FC = () => {
 
         {/* --- WhatsApp Float Button --- */}
         {/* OPTIMIZATION: Conditionality ensures this non-critical UI doesn't interfere with initial hydration/paint */}
-        {showFloatingElements && (
+        
           <m.div
             className="fixed bottom-6 right-6 z-50 group"
             initial={{ scale: 0, opacity: 0 }}
@@ -517,7 +504,7 @@ const HomePage: React.FC = () => {
               </svg>
             </a>
           </m.div>
-        )}
+        
       </div>
     </LazyMotion>
   );

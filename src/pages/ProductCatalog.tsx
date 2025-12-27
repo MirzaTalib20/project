@@ -277,26 +277,29 @@ const filteredProducts = products.filter((product) =>
         )}
 
         {/* Products Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredAndSortedProducts.length > 0 ? (
-            filteredAndSortedProducts.map((product, idx) => (
-              <motion.div
-                key={product._id}
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: idx * 0.05 }}
-              >
-                <ProductCard product={product} />
-              </motion.div>
-            ))
-          ) : (
-            <div className="col-span-full text-center py-12">
-              <p className="text-gray-600">
-                {loading ? 'Loading products...' : 'No products found. Try adjusting your filters.'}
-              </p>
-            </div>
-          )}
-        </div>
+       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+  {filteredAndSortedProducts.length > 0 ? (
+    filteredAndSortedProducts.map((product, idx) => (
+      <motion.div
+        key={product._id}
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: idx * 0.05 }}
+      >
+        <ProductCard product={product} />
+      </motion.div>
+    ))
+  ) : (
+    <div className="col-span-full text-center py-12">
+      <p className="text-gray-600">
+        {loading
+          ? "Loading products..."
+          : "No products found. Try adjusting your filters."}
+      </p>
+    </div>
+  )}
+</div>
+
       </div>
     </div>
   );
