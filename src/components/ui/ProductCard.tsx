@@ -48,7 +48,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </p>
 
         {/* Footer */}
-        <div className="mt-4 flex items-center justify-between gap-3">
+        <div className="mt-auto pt-4 flex flex-col gap-2">
           {/* Rental badge */}
           <span
             className="
@@ -66,22 +66,22 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
           {/* RENT BUTTON */}
           <Link
-            to={`/product/${product._id}`}
-            className="
-              whitespace-nowrap
-              px-4 py-1.5
-              rounded-full
-              bg-blue-600
-              text-white
-              text-xs font-semibold
-              transition-all duration-300
-              hover:bg-blue-700
-              hover:scale-105
-              active:scale-95
-            "
-          >
-            Rent
-          </Link>
+  to={`/product/${product._id}`}
+  className="
+    w-full
+    py-2.5
+    rounded-xl
+    bg-blue-600
+    text-white
+    text-sm font-semibold
+    text-center
+    transition-all duration-200
+    active:scale-[0.98]
+    hover:bg-blue-700
+  "
+>
+  Rent
+</Link>
         </div>
       </div>
     </div>

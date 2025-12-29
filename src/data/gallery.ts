@@ -3,10 +3,11 @@ import gallery4 from "../assets/images/MIST FAN BLACK - 1.webp";
 import gallery2 from "../assets/images/MIST FAN SILVER - 6.png";
 import gallery3 from "../assets/images/PORTABLE AC - 1.webp";
 import gallery5 from "../assets/images/jumbo-fan-img.webp";
+import gallery1 from "../assets/images/pedestal_fan_26_inch.png";
 export const gallery: Gallery[] = [
   {
     _id: '1',
-    imageUrl: "",
+    imageUrl: gallery1,
             name: "Pedestal Fan",
             category: "Fans"
   },

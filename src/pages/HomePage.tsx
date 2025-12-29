@@ -1,8 +1,4 @@
-import React, {
-  useEffect,
-  useCallback,
-  useMemo,
-} from "react";
+import React, { useEffect, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 // OPTIMIZATION: Use LazyMotion and domAnimation to reduce initial bundle size of Framer Motion
 import { LazyMotion, domAnimation, m } from "framer-motion";
@@ -30,6 +26,7 @@ import { products } from "../data/products";
 import useEmblaCarousel from "embla-carousel-react";
 import AutoPlay from "embla-carousel-autoplay";
 import ContextHero from "../components/ContextHero";
+import HowItWorks from "../components/ui/HowItWorks";
 const HomePage: React.FC = () => {
   // OPTIMIZATION: Memoize static data to prevent recreation on re-renders
   const features = useMemo(
@@ -102,6 +99,110 @@ const HomePage: React.FC = () => {
         {/* --- Hero Section --- */}
         <ContextHero />
 
+ {/* --- Featured Products (Recommendation Style) --- */}
+        <section className="py-16 md:py-20 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6 md:mb-8">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
+                Explore our recommendations
+              </h2>
+
+              <Link
+                to="/catalog"
+                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+              >
+                View all →
+              </Link>
+            </div>
+
+            {/* GRID (NO SCROLL) */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+              {featuredProducts.map((product) => (
+                <div
+                  key={product._id}
+                  className="
+            bg-gray-50
+            rounded-2xl
+            border border-gray-200/60
+            hover:shadow-lg
+            transition-all duration-300
+            flex flex-col
+          "
+                >
+                  {/* Image */}
+                  <div className="relative h-36 sm:h-40 flex items-center justify-center bg-white rounded-t-2xl">
+                    <img
+                      src={product.images[0]}
+                      alt={product.name}
+                      loading="lazy"
+                      className="h-full object-contain p-4"
+                    />
+
+                    {/* Category */}
+                    <span className="absolute top-2 right-2 text-[10px] bg-gray-100 px-2 py-0.5 rounded-full text-gray-600">
+                      {product.category}
+                    </span>
+                  </div>
+
+                  {/* Info */}
+                  <div className="p-4 flex flex-col flex-grow">
+                    <h3 className="text-sm font-semibold text-gray-900 leading-tight line-clamp-2">
+                      {product.name}
+                    </h3>
+
+                    <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                      {product.description}
+                    </p>
+
+                    {/* Price */}
+                    <div className="mt-3 text-gray-900 font-bold text-sm">
+                      ₹{product.rentPrices?.daily}
+                      <span className="text-xs font-normal text-gray-500">
+                        {" "}
+                        / day
+                      </span>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="mt-4 flex gap-2">
+                      <Link
+                        to={`/product/${product._id}`}
+                        className="
+                  flex-1 text-xs font-semibold
+                  bg-blue-600 text-white
+                  py-2 rounded-full
+                  text-center
+                  hover:bg-blue-700
+                  transition
+                "
+                      >
+                        Rent
+                      </Link>
+
+                      <Link
+                        to={`/product/${product._id}`}
+                        className="
+                  flex-1 text-xs font-medium
+                  border border-gray-300
+                  py-2 rounded-full
+                  text-center
+                  text-gray-700
+                  hover:bg-gray-100
+                  transition
+                "
+                      >
+                        Details
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+
         {/* --- Features Section --- */}
         <section className="py-24 bg-gradient-to-b from-[#FFE8DB]/20 to-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -164,109 +265,7 @@ const HomePage: React.FC = () => {
         </section>
 
         {/* --- Featured Products --- */}
-      {/* --- Featured Products (Recommendation Style) --- */}
-<section className="py-16 md:py-20 bg-white">
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-    {/* Header */}
-    <div className="flex items-center justify-between mb-6 md:mb-8">
-      <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
-        Explore our recommendations
-      </h2>
-
-      <Link
-        to="/catalog"
-        className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-      >
-        View all →
-      </Link>
-    </div>
-
-    {/* GRID (NO SCROLL) */}
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-      {featuredProducts.map((product) => (
-        <div
-          key={product._id}
-          className="
-            bg-gray-50
-            rounded-2xl
-            border border-gray-200/60
-            hover:shadow-lg
-            transition-all duration-300
-            flex flex-col
-          "
-        >
-          {/* Image */}
-          <div className="relative h-36 sm:h-40 flex items-center justify-center bg-white rounded-t-2xl">
-            <img
-              src={product.images[0]}
-              alt={product.name}
-              loading="lazy"
-              className="h-full object-contain p-4"
-            />
-
-            {/* Category */}
-            <span className="absolute top-2 right-2 text-[10px] bg-gray-100 px-2 py-0.5 rounded-full text-gray-600">
-              {product.category}
-            </span>
-          </div>
-
-          {/* Info */}
-          <div className="p-4 flex flex-col flex-grow">
-            <h3 className="text-sm font-semibold text-gray-900 leading-tight line-clamp-2">
-              {product.name}
-            </h3>
-
-            <p className="text-xs text-gray-500 mt-1 line-clamp-2">
-              {product.description}
-            </p>
-
-            {/* Price */}
-            <div className="mt-3 text-gray-900 font-bold text-sm">
-              ₹{product.rentPrices?.daily}
-              <span className="text-xs font-normal text-gray-500"> / day</span>
-            </div>
-
-            {/* Actions */}
-            <div className="mt-4 flex gap-2">
-              <Link
-                to={`/product/${product._id}`}
-                className="
-                  flex-1 text-xs font-semibold
-                  bg-blue-600 text-white
-                  py-2 rounded-full
-                  text-center
-                  hover:bg-blue-700
-                  transition
-                "
-              >
-                Rent
-              </Link>
-
-              <Link
-                to={`/product/${product._id}`}
-                className="
-                  flex-1 text-xs font-medium
-                  border border-gray-300
-                  py-2 rounded-full
-                  text-center
-                  text-gray-700
-                  hover:bg-gray-100
-                  transition
-                "
-              >
-                Details
-              </Link>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-</section>
-
-
-
+       
         {/* --- Gallery Section --- */}
         <section className="relative py-20 bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 overflow-hidden">
           <div className="max-w-7xl mx-auto px-4 md:px-8">
@@ -375,6 +374,8 @@ const HomePage: React.FC = () => {
           </div>
         </section>
 
+<HowItWorks/>
+
         {/* --- Smart Choice Section --- */}
         <section className="py-24 bg-gradient-to-b from-white to-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -482,29 +483,28 @@ const HomePage: React.FC = () => {
 
         {/* --- WhatsApp Float Button --- */}
         {/* OPTIMIZATION: Conditionality ensures this non-critical UI doesn't interfere with initial hydration/paint */}
-        
-          <m.div
-            className="fixed bottom-6 right-6 z-50 group"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+
+        <m.div
+          className="fixed bottom-6 right-6 z-50 group"
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+        >
+          <div className="whatsapp-tooltip">Chat with us on WhatsApp</div>
+          <a
+            href="https://wa.me/919999999999?text=Hi,%20I%20want%20to%20know%20more%20about%20your%20cooling%20equipment%20rental%20services"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-all duration-300 hover:scale-110"
           >
-            <div className="whatsapp-tooltip">Chat with us on WhatsApp</div>
-            <a
-              href="https://wa.me/919999999999?text=Hi,%20I%20want%20to%20know%20more%20about%20your%20cooling%20equipment%20rental%20services"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-all duration-300 hover:scale-110"
+            <svg
+              className="w-6 h-6 fill-current"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
             >
-              <svg
-                className="w-6 h-6 fill-current"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-              >
-                <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824zm-3.423-14.416c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm.029 18.88c-1.161 0-2.305-.292-3.318-.844l-3.677.964.984-3.595c-.607-1.052-.927-2.246-.926-3.468.001-3.825 3.113-6.937 6.937-6.937 1.856.001 3.598.723 4.907 2.034 1.31 1.311 2.031 3.054 2.03 4.908-.001 3.825-3.113 6.938-6.937 6.938z" />
-              </svg>
-            </a>
-          </m.div>
-        
+              <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824zm-3.423-14.416c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm.029 18.88c-1.161 0-2.305-.292-3.318-.844l-3.677.964.984-3.595c-.607-1.052-.927-2.246-.926-3.468.001-3.825 3.113-6.937 6.937-6.937 1.856.001 3.598.723 4.907 2.034 1.31 1.311 2.031 3.054 2.03 4.908-.001 3.825-3.113 6.938-6.937 6.938z" />
+            </svg>
+          </a>
+        </m.div>
       </div>
     </LazyMotion>
   );

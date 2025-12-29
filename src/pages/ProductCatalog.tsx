@@ -1,305 +1,233 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Filter, Search, X, Loader } from 'lucide-react';
-import ProductCard from '../components/ui/ProductCard';
-import { productService } from '../services/productService';
-import { locations } from '../data/locations';
-import { Product } from '../types';
+import React, { useMemo, useRef, useState } from "react";
+import { motion } from "framer-motion";
+import { Search, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 
+import ProductCard from "../components/ui/ProductCard";
+import { products } from "../data/products";
+
+/* ================= ICON IMPORTS ================= */
+
+import aircoolerIcon from "../assets/icons/aircooler.png";
+import electricheaterIcon from "../assets/icons/electricheater.png";
+import jumboFanIcon from "../assets/icons/jumbo-fan.jpg";
+import mistfanIcon from "../assets/icons/mistfan.png";
+import mistfanpartsIcon from "../assets/icons/mistfanparts.png";
+import pedestalfanIcon from "../assets/icons/pedestalfan.png";
+import portableacIcon from "../assets/icons/portableac.png";
+import toweracIcon from "../assets/icons/towerac.png";
+
+/* ================= CATEGORY NORMALIZATION ================= */
+/**
+ * Your product data uses HUMAN labels
+ * Your UI/icons need STABLE SLUGS
+ * This map is the bridge (do NOT skip this)
+ */
+const CATEGORY_SLUGS: Record<string, string> = {
+  "Air Cooler": "aircooler",
+  "Electric Heater": "electricheater",
+  "Jumbo Fan": "jumbo-fan",
+  "Mist Fan": "mistfan",
+  "Mist Fan Parts": "mistfanparts",
+  "Pedestal Fan": "pedestalfan",
+  "Portable AC": "portableac",
+  "Tower AC": "towerac",
+};
+
+/* ================= ICON MAP (SLUG → ICON) ================= */
+
+const CATEGORY_ICONS: Record<string, string> = {
+  aircooler: aircoolerIcon,
+  electricheater: electricheaterIcon,
+  "jumbo-fan": jumboFanIcon,
+  mistfan: mistfanIcon,
+  mistfanparts: mistfanpartsIcon,
+  pedestalfan: pedestalfanIcon,
+  portableac: portableacIcon,
+  towerac: toweracIcon,
+};
+
+/* ================= LABEL MAP (SLUG → LABEL) ================= */
+
+const CATEGORY_LABELS: Record<string, string> = {
+  aircooler: "Cooler",
+  electricheater: "Heater",
+  "jumbo-fan": "Jumbo",
+  mistfan: "Mist Fan",
+  mistfanparts: "Mist Parts",
+  pedestalfan: "Pedestal",
+  portableac: "Portable AC",
+  towerac: "Tower AC",
+};
+
 const ProductCatalog: React.FC = () => {
-  // Add new state for API handling
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [searchParams] = useSearchParams();
+  const initialSearch = searchParams.get("search") || "";
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedLocation, setSelectedLocation] = useState('');
-  const [priceRange, setPriceRange] = useState('');
-  const [availability, setAvailability] = useState('');
-  const [sortBy, setSortBy] = useState('name');
-  const [showFilters, setShowFilters] = useState(false);
-const [searchParams] = useSearchParams();
-const searchQuery = searchParams.get("search") || "";
+  const [searchTerm, setSearchTerm] = useState(initialSearch);
+  const [activeCategory, setActiveCategory] = useState<string>("");
 
-const filteredProducts = products.filter((product) =>
-  product.name.toLowerCase().includes(searchQuery.toLowerCase())
-);
-  // Fetch products on component mount
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        const response = await productService.fetchAll();
-        
-        if (response.success) {
-          setProducts(response.data);
-        } else {
-          setError('Failed to load products');
-        }
-      } catch (err) {
-        console.error('Fetch error:', err);
-        setError(err instanceof Error ? err.message : 'An error occurred');
-      } finally {
-        setLoading(false);
-      }
-    };
+  /* ================= CATEGORY SCROLL ================= */
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-    fetchProducts();
+  const scrollLeft = () => {
+    scrollRef.current?.scrollBy({ left: -160, behavior: "smooth" });
+  };
+
+  const scrollRight = () => {
+    scrollRef.current?.scrollBy({ left: 160, behavior: "smooth" });
+  };
+
+  /* ================= SAFE CATEGORY LIST ================= */
+  const categories = useMemo(() => {
+    return [
+      ...new Set(
+        products
+          .map((p) => CATEGORY_SLUGS[p.category])
+          .filter(Boolean)
+      ),
+    ];
   }, []);
 
-  // Update categories to use fetched products
-  const categories = useMemo(() => {
-    return [...new Set(products.map(p => p.category))];
-  }, [products]);
-
-  // Update filtered products logic
-  const filteredAndSortedProducts = useMemo(() => {
-    let filtered = products.filter(product => {
+  /* ================= FILTER LOGIC ================= */
+  const filteredProducts = useMemo(() => {
+    return products.filter((product) => {
       const matchesSearch =
         product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         product.description.toLowerCase().includes(searchTerm.toLowerCase());
 
-      const matchesCategory = !selectedCategory || product.category === selectedCategory;
-      const matchesLocation =
-        !selectedLocation || product.locations?.includes(selectedLocation);
-      const matchesAvailability = !availability || product.availability === availability;
+      const productSlug = CATEGORY_SLUGS[product.category];
+      const matchesCategory =
+        !activeCategory || productSlug === activeCategory;
 
-      let matchesPrice = true;
-      if (priceRange) {
-        const [min, max] = priceRange.split('-').map(Number);
-        if (product.rentPrices) {
-          if (max) {
-            matchesPrice = product.rentPrices.daily >= min && product.rentPrices.daily <= max;
-          } else {
-            matchesPrice = product.rentPrices.daily >= min;
-          }
-        } else if (product.buyPrice) {
-          if (max) {
-            matchesPrice = product.buyPrice >= min && product.buyPrice <= max;
-          } else {
-            matchesPrice = product.buyPrice >= min;
-          }
-        }
-      }
-
-      return matchesSearch && matchesCategory && matchesLocation && matchesAvailability && matchesPrice;
+      return matchesSearch && matchesCategory;
     });
-
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case 'price-low':
-          return (a.rentPrices?.daily || a.buyPrice || 0) - (b.rentPrices?.daily || b.buyPrice || 0);
-        case 'price-high':
-          return (b.rentPrices?.daily || b.buyPrice || 0) - (a.rentPrices?.daily || a.buyPrice || 0);
-        case 'name':
-        default:
-          return a.name.localeCompare(b.name);
-      }
-    });
-
-    return filtered;
-  }, [products, searchTerm, selectedCategory, selectedLocation, priceRange, availability, sortBy]);
-
-  const clearFilters = () => {
-    setSearchTerm('');
-    setSelectedCategory('');
-    setSelectedLocation('');
-    setPriceRange('');
-    setAvailability('');
-    setSortBy('name');
-  };
-
-  const activeFiltersCount = [
-    selectedCategory,
-    selectedLocation,
-    priceRange,
-    availability,
-    searchTerm
-  ].filter(Boolean).length;
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <Loader className="w-8 h-8 animate-spin text-blue-600" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <p className="text-xl text-gray-600 mb-4">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
-  }
+  }, [searchTerm, activeCategory]);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 py-6 md:py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8 mt-20">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Equipment Catalog</h1>
-          <p className="text-gray-600 max-w-2xl">
-            Browse our collection of cooling equipment. Use filters to find exactly what you need.
-          </p>
-        </div>
 
-        {/* Search & Filters */}
-        <div className="mb-6 flex flex-col sm:flex-row gap-4 items-center justify-between">
+        {/* ================= HEADER ================= */}
+        <header className="mt-16 md:mt-20 mb-6">
+          <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-2">
+            Equipment Catalog
+          </h1>
+          <p className="text-sm md:text-base text-gray-600 max-w-2xl">
+            Browse professional cooling equipment and filter by category.
+          </p>
+        </header>
+
+        {/* ================= SEARCH ================= */}
+        <div className="flex flex-col sm:flex-row gap-3 mb-6">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
-              type="text"
-              placeholder="Search equipment..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Search equipment..."
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          <div className="flex items-center space-x-4">
+          {(searchTerm || activeCategory) && (
             <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-teal-500 text-white px-4 py-2 rounded-lg font-medium hover:shadow-lg hover:scale-[1.02] transition-all"
+              onClick={() => {
+                setSearchTerm("");
+                setActiveCategory("");
+              }}
+              className="inline-flex items-center gap-2 px-4 py-2.5 border rounded-lg text-sm text-gray-600 hover:bg-gray-100"
             >
-              <Filter className="w-4 h-4" />
-              <span>Filters</span>
-              {activeFiltersCount > 0 && (
-                <span className="bg-white text-blue-600 text-xs rounded-full px-2 py-1 min-w-[20px] text-center font-semibold">
-                  {activeFiltersCount}
-                </span>
-              )}
+              <X className="w-4 h-4" />
+              Clear
             </button>
-
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="bg-white border border-gray-300 px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="name">Sort by Name</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-            </select>
-          </div>
+          )}
         </div>
 
-        {/* Filters Panel */}
-        {showFilters && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="bg-white p-6 rounded-lg shadow-md mb-6"
+        {/* ================= CATEGORY FILTER ================= */}
+        <section className="mb-8 relative">
+          {/* LEFT ARROW — MOBILE ONLY */}
+          <button
+            onClick={scrollLeft}
+            className="md:hidden absolute left-0 top-1/2 -translate-y-1/2 z-10
+              w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center"
           >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
-              <button
-                onClick={clearFilters}
-                className="flex items-center space-x-1 bg-gradient-to-r from-blue-600 to-teal-500 text-white px-3 py-1 rounded-lg font-medium hover:shadow-lg hover:scale-[1.02] transition-all text-sm"
+            <ChevronLeft className="w-4 h-4 text-gray-700" />
+          </button>
+
+          {/* SCROLL AREA */}
+          <div
+            ref={scrollRef}
+            className="flex gap-4 overflow-x-auto scroll-smooth px-10 md:px-0 scrollbar-hide"
+          >
+            {categories.map((slug) => {
+              const active = slug === activeCategory;
+              const icon = CATEGORY_ICONS[slug];
+
+              return (
+                <button
+                  key={slug}
+                  onClick={() =>
+                    setActiveCategory(active ? "" : slug)
+                  }
+                  className="flex flex-col items-center gap-1 min-w-[64px]"
+                >
+                  <div
+                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all
+                      ${
+                        active
+                          ? "bg-blue-600 shadow-md scale-105"
+                          : "bg-white shadow-sm"
+                      }`}
+                  >
+                    <img
+                      src={icon}
+                      alt={CATEGORY_LABELS[slug]}
+                      className="w-6 h-6 object-contain"
+                    />
+                  </div>
+
+                  <span
+                    className={`text-[10px] font-medium ${
+                      active ? "text-blue-600" : "text-gray-600"
+                    }`}
+                  >
+                    {CATEGORY_LABELS[slug]}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* RIGHT ARROW — MOBILE ONLY */}
+          <button
+            onClick={scrollRight}
+            className="md:hidden absolute right-0 top-1/2 -translate-y-1/2 z-10
+              w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center"
+          >
+            <ChevronRight className="w-4 h-4 text-gray-700" />
+          </button>
+        </section>
+
+        {/* ================= PRODUCT GRID ================= */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+          {filteredProducts.length > 0 ? (
+            filteredProducts.map((product, idx) => (
+              <motion.div
+                key={product._id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.25, delay: idx * 0.03 }}
               >
-                <X className="w-4 h-4" />
-                <span>Clear All</span>
-              </button>
+                <ProductCard product={product} />
+              </motion.div>
+            ))
+          ) : (
+            <div className="col-span-full text-center py-14 text-gray-500">
+              No products found.
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {/* Category */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">All Categories</option>
-                  {categories.map(category => (
-                    <option key={category} value={category}>{category}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Location */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
-                <select
-                  value={selectedLocation}
-                  onChange={(e) => setSelectedLocation(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">All Locations</option>
-                  {locations.filter(loc => loc.isActive).map(loc => (
-                    <option key={loc.id} value={loc.name}>{loc.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Price Range */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
-                <select
-                  value={priceRange}
-                  onChange={(e) => setPriceRange(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Any Price</option>
-                  <option value="0-1000">₹0 - ₹1,000</option>
-                  <option value="1000-5000">₹1,000 - ₹5,000</option>
-                  <option value="5000-20000">₹5,000 - ₹20,000</option>
-                  <option value="20000">₹20,000+</option>
-                </select>
-              </div>
-
-              {/* Availability */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Availability</label>
-                <select
-                  value={availability}
-                  onChange={(e) => setAvailability(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">All</option>
-                  <option value="available">Available</option>
-                  <option value="booked">Booked</option>
-                </select>
-              </div>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Products Grid */}
-       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-  {filteredAndSortedProducts.length > 0 ? (
-    filteredAndSortedProducts.map((product, idx) => (
-      <motion.div
-        key={product._id}
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: idx * 0.05 }}
-      >
-        <ProductCard product={product} />
-      </motion.div>
-    ))
-  ) : (
-    <div className="col-span-full text-center py-12">
-      <p className="text-gray-600">
-        {loading
-          ? "Loading products..."
-          : "No products found. Try adjusting your filters."}
-      </p>
-    </div>
-  )}
-</div>
-
+          )}
+        </div>
       </div>
     </div>
   );

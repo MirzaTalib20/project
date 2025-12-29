@@ -1,302 +1,234 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ShoppingCart, Calendar, Check, Truck, Shield, 
-  Clock, Star, ChevronLeft, ChevronRight, Info, Loader 
-} from 'lucide-react';
-import { productService } from '../services/productService';
-import { Product, RentDuration } from '../types';
+import React, { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Star,
+  Info,
+  Truck,
+  Shield,
+  Clock,
+  Check,
+  Calendar,
+} from "lucide-react";
 
-type PurchaseMode = 'buy' | 'rent';
+import { products } from "../data/products";
+import { Product } from "../types";
 
 const ProductDetail: React.FC = () => {
-  const { id } = useParams();
-  const [mode, setMode] = useState<PurchaseMode>('rent');
-  const [rentDuration, setRentDuration] = useState<RentDuration>('daily');
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+
+  const product: Product | undefined = products.find(
+    (p) => p._id === id
+  );
+
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [showSpecifications, setShowSpecifications] = useState(false);
-  
-  // Add new state for API handling
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [showSpecs, setShowSpecs] = useState(false);
 
-  useEffect(() => {
-    const fetchProduct = async () => {
-      if (!id) return;
-
-      try {
-        setLoading(true);
-        const response = await productService.getById(id);
-        
-        if (response.success) {
-          setProduct(response.data);
-        } else {
-          setError('Failed to load product');
-        }
-      } catch (err) {
-        console.error('Fetch error:', err);
-        setError(err instanceof Error ? err.message : 'An error occurred');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProduct();
-  }, [id]);
-
-  if (loading) {
+  if (!product) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <Loader className="w-8 h-8 animate-spin text-blue-600" />
+        <p className="text-gray-600 text-lg">Product not found</p>
       </div>
     );
   }
 
-  if (error || !product) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-xl text-gray-600">{error || 'Product not found'}</div>
-      </div>
+  const nextImage = () =>
+    setCurrentImageIndex((i) =>
+      i === product.images.length - 1 ? 0 : i + 1
     );
-  }
 
-  
-
-
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => 
-      prev === product.images.length - 1 ? 0 : prev + 1
+  const prevImage = () =>
+    setCurrentImageIndex((i) =>
+      i === 0 ? product.images.length - 1 : i - 1
     );
-  };
-
-  const prevImage = () => {
-    setCurrentImageIndex((prev) => 
-      prev === 0 ? product.images.length - 1 : prev - 1
-    );
-  };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 py-10">
+      <div className="max-w-7xl mx-auto px-4 lg:px-8">
         <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
-          <div className="flex flex-col lg:flex-row gap-8">
-            
-            {/* Image Gallery Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+            {/* ================= IMAGE SECTION ================= */}
             <motion.div
-              className="lg:w-1/2 p-6 space-y-4"
-              initial={{ opacity: 0, x: -50 }}
+              initial={{ opacity: 0, x: -40 }}
               animate={{ opacity: 1, x: 0 }}
+              className="p-6"
             >
-              <div className="relative group">
-                <motion.img
-                  key={currentImageIndex}
+              <div className="relative aspect-[4/3] bg-gray-100 rounded-2xl overflow-hidden">
+                <img
                   src={product.images[currentImageIndex]}
                   alt={product.name}
-                  className="rounded-2xl w-full h-[400px] object-cover shadow-lg"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3 }}
+                  className="w-full h-full object-contain p-6"
                 />
-                
+
                 {product.images.length > 1 && (
                   <>
                     <button
                       onClick={prevImage}
-                      className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full 
-                                 bg-blue-600/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 
-                                 transition-opacity hover:bg-blue-700"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 p-2 bg-white rounded-full shadow hover:bg-gray-100"
                     >
-                      <ChevronLeft className="w-5 h-5 text-white" />
+                      <ChevronLeft className="w-5 h-5" />
                     </button>
                     <button
                       onClick={nextImage}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full 
-                                 bg-blue-600/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 
-                                 transition-opacity hover:bg-blue-700"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-white rounded-full shadow hover:bg-gray-100"
                     >
-                      <ChevronRight className="w-5 h-5 text-white" />
+                      <ChevronRight className="w-5 h-5" />
                     </button>
                   </>
                 )}
               </div>
 
-              {/* Thumbnail Gallery */}
+              {/* Thumbnails */}
               {product.images.length > 1 && (
-                <div className="flex gap-2 overflow-x-auto pb-2">
-                  {product.images.map((img, index) => (
+                <div className="flex gap-3 mt-4">
+                  {product.images.map((img, i) => (
                     <button
-                      key={index}
-                      onClick={() => setCurrentImageIndex(index)}
-                      className={`relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden
-                        ${currentImageIndex === index ? 'ring-2 ring-[#5682B1]' : 'opacity-70'}
-                      `}
+                      key={i}
+                      onClick={() => setCurrentImageIndex(i)}
+                      className={`w-16 h-16 rounded-lg overflow-hidden border ${
+                        i === currentImageIndex
+                          ? "ring-2 ring-blue-600"
+                          : "opacity-70"
+                      }`}
                     >
-                      <img src={img} alt="" className="w-full h-full object-cover" />
+                      <img
+                        src={img}
+                        className="w-full h-full object-cover"
+                        alt=""
+                      />
                     </button>
                   ))}
                 </div>
               )}
             </motion.div>
 
-            {/* Info Section */}
+            {/* ================= INFO SECTION ================= */}
             <motion.div
-              className="lg:w-1/2 p-8 space-y-6"
-              initial={{ opacity: 0, x: 50 }}
+              initial={{ opacity: 0, x: 40 }}
               animate={{ opacity: 1, x: 0 }}
+              className="p-8 space-y-6"
             >
-              {/* Category & Availability Badge */}
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-[#5682B1]">
+              {/* Category + Availability */}
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-blue-600">
                   {product.category}
                 </span>
-                <span className={`
-                  px-3 py-1 rounded-full text-sm font-medium
-                  ${product.availability === 'available' 
-                    ? 'bg-green-100 text-green-700' 
-                    : 'bg-red-100 text-red-700'}
-                `}>
-                  {product.availability.charAt(0).toUpperCase() + product.availability.slice(1)}
+                <span
+                  className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    product.availability === "available"
+                      ? "bg-green-100 text-green-700"
+                      : "bg-red-100 text-red-700"
+                  }`}
+                >
+                  {product.availability === "available"
+                    ? "Available for Rent"
+                    : "Currently Unavailable"}
                 </span>
               </div>
 
-              {/* Title & Description */}
+              {/* Title */}
               <div>
-                <h1 className="text-4xl font-bold text-gray-900">{product.name}</h1>
-                <p className="mt-4 text-gray-600 leading-relaxed">{product.description}</p>
+                <h1 className="text-3xl font-bold text-gray-900">
+                  {product.name}
+                </h1>
+                <p className="mt-3 text-gray-600 leading-relaxed">
+                  {product.description}
+                </p>
               </div>
 
-              {/* Ratings */}
-              <div className="flex items-center space-x-2">
+              {/* Trust Rating */}
+              <div className="flex items-center gap-1">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                  <Star
+                    key={i}
+                    className="w-5 h-5 text-yellow-400 fill-current"
+                  />
                 ))}
-                <span className="text-gray-500 text-sm">(4.8 / 5)</span>
+                <span className="ml-2 text-sm text-gray-500">
+                  Trusted by 500+ customers
+                </span>
               </div>
 
-              {/* Purchase Options */}
-              <div className="space-y-6 py-6 border-y border-gray-100">
-                {/* Mode Toggle */}
-                <div className="flex gap-4 p-1 bg-gray-100 rounded-xl w-fit">
-                  {(['rent', 'buy'] as const).map((option) => (
-                    <button
-                      key={option}
-                      onClick={() => setMode(option)}
-                      className={`
-                        px-6 py-2 rounded-lg font-medium transition-all
-                        ${mode === option 
-                          ? 'bg-blue-600 text-white shadow-md hover:bg-blue-700' 
-                          : 'text-gray-600 hover:bg-blue-50'}
-                      `}
-                    >
-                      {option.charAt(0).toUpperCase() + option.slice(1)}
-                    </button>
-                  ))}
+              {/* ================= RENT CTA CARD ================= */}
+              <div className="bg-gradient-to-br from-blue-50 to-teal-50 rounded-2xl p-6 space-y-4 border">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Rent this equipment
+                  </h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Flexible rental duration · Fast delivery · Professional setup
+                  </p>
                 </div>
 
-                {/* Pricing Section */}
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={mode}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    className="space-y-4"
-                  >
-                    {mode === 'buy' ? (
-                      <div className="space-y-4">
-                        <div className="text-3xl font-bold text-[#5682B1]">₹{product.buyPrice?.toLocaleString()}</div>
-                        <button 
-                          className="w-full flex items-center justify-center gap-2 px-6 py-3 
-                                     bg-gradient-to-r from-blue-600 to-teal-500 text-white rounded-xl 
-                                     font-semibold shadow-md hover:shadow-lg 
-                                     transform transition-all duration-200 
-                                     hover:-translate-y-0.5"
-                        >
-                          <ShoppingCart className="w-5 h-5" />
-                          Buy Now
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="space-y-4">
-                        {/* Rent Durations */}
-                       <div className="grid grid-cols-1 gap-4">
-  <button
-    onClick={() => setRentDuration('daily')}
-    className={`p-4 rounded-2xl border text-center transition-all
-      ${rentDuration === 'daily'
-        ? 'bg-gradient-to-r from-[#5682B1]/20 to-[#739EC9]/20 border-[#5682B1] shadow-md'
-        : 'border-gray-200 hover:border-[#5682B1]'
-      }`}
-  >
-    <div className="text-sm text-gray-600 capitalize">daily</div>
-    <div className="text-lg font-bold text-[#5682B1]">
-      ₹{product.rentPrices?.daily.toLocaleString()}
-    </div>
-  </button>
-</div>
+                <button
+                  onClick={() =>
+                    navigate(`/booking?product=${product._id}`)
+                  }
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-teal-500 text-white font-semibold hover:shadow-lg hover:scale-[1.01] transition"
+                >
+                  <Calendar className="inline w-5 h-5 mr-2" />
+                  Request Rental
+                </button>
 
-                        <button 
-                          className="w-full flex items-center justify-center gap-2 px-6 py-3 
-                                     text-white rounded-xl 
-                                     font-semibold shadow-md hover:shadow-lg 
-                                     transform transition-all duration-200 
-                                     hover:-translate-y-0.5 bg-gradient-to-r from-blue-600 to-teal-500" 
-                        >
-                          <Calendar className="w-5 h-5" />
-                          Rent Now
-                        </button>
-                      </div>
-                    )}
-                  </motion.div>
-                </AnimatePresence>
+                <p className="text-xs text-gray-500 text-center">
+                  Our team will confirm availability & pricing
+                </p>
               </div>
 
-              {/* Specifications Toggle */}
-              <button
-                onClick={() => setShowSpecifications(!showSpecifications)}
-                className="flex items-center justify-between w-full py-2 text-left 
-                           hover:text-blue-600 transition-colors"
-              >
-                <span className="font-medium">Specifications</span>
-                <Info className={`w-5 h-5 transition-transform 
-                  ${showSpecifications ? 'rotate-180 text-blue-600' : ''}`} 
-                />
-              </button>
-
-              {/* Specifications Content */}
-              <AnimatePresence>
-                {showSpecifications && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden"
+              {/* ================= SPECIFICATIONS ================= */}
+              {product.specifications && (
+                <div className="border rounded-xl p-4">
+                  <button
+                    onClick={() => setShowSpecs(!showSpecs)}
+                    className="flex w-full justify-between items-center font-medium"
                   >
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      {Object.entries(product.specifications || {}).map(([key, value]) => (
-                        <div key={key} className="flex flex-col">
-                          <span className="text-gray-500">{key}</span>
-                          <span className="font-medium">{value}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                    Specifications
+                    <Info
+                      className={`w-4 h-4 transition ${
+                        showSpecs ? "rotate-180 text-blue-600" : ""
+                      }`}
+                    />
+                  </button>
 
-              {/* Features Grid */}
-              <div className="grid grid-cols-2 gap-4">
+                  <AnimatePresence>
+                    {showSpecs && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="grid grid-cols-2 gap-4 mt-4 text-sm">
+                          {Object.entries(
+                            product.specifications
+                          ).map(([key, value]) => (
+                            <div key={key}>
+                              <p className="text-gray-500">{key}</p>
+                              <p className="font-medium">{value}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
+
+              {/* ================= BENEFITS ================= */}
+              <div className="grid grid-cols-2 gap-4 text-sm">
                 {[
-                  { icon: <Truck className="w-5 h-5 text-[#5682B1]" />, text: "Free Delivery" },
-                  { icon: <Shield className="w-5 h-5 text-[#5682B1]" />, text: "Service Warranty" },
-                  { icon: <Clock className="w-5 h-5 text-[#5682B1]" />, text: "24/7 Support" },
-                  { icon: <Check className="w-5 h-5 text-[#5682B1]" />, text: "Quality Assured" }
-                ].map((feature, index) => (
-                  <div key={index} className="flex items-center gap-2 text-gray-700">
-                    {feature.icon}
-                    <span>{feature.text}</span>
+                  { icon: <Truck className="w-5 h-5" />, text: "Free Delivery" },
+                  { icon: <Shield className="w-5 h-5" />, text: "Maintained Units" },
+                  { icon: <Clock className="w-5 h-5" />, text: "24/7 Support" },
+                  { icon: <Check className="w-5 h-5" />, text: "Quality Assured" },
+                ].map((f, i) => (
+                  <div key={i} className="flex items-center gap-2 text-gray-700">
+                    {f.icon}
+                    {f.text}
                   </div>
                 ))}
               </div>
