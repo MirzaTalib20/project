@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Menu,
@@ -7,7 +7,7 @@ import {
   Phone,
   Home,
   Box,
-  Info,
+  Contact,
   HelpCircle,
   Mail,
   ChevronLeft,
@@ -17,9 +17,8 @@ import { motion, AnimatePresence } from "framer-motion";
 const navLinks = [
   { path: "/", label: "Home", icon: Home },
   { path: "/catalog", label: "Products", icon: Box },
-  { path: "/about", label: "About", icon: Info },
   { path: "/faq", label: "FAQ", icon: HelpCircle },
-  { path: "/contact", label: "Contact", icon: Mail },
+  { path: "/contact", label: "Contact Us", icon: Contact },
 ];
 
 const Navbar = ({
@@ -29,11 +28,37 @@ const Navbar = ({
   collapsed: boolean;
   setCollapsed: (v: boolean) => void;
 }) => {
-
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  // 👇 MOBILE SCROLL VISIBILITY
+  const [mobileVisible, setMobileVisible] = useState(true);
+  const lastScrollY = useRef(0);
+
   const isActive = (path: string) => location.pathname === path;
+
+  /* ================= MOBILE SCROLL HIDE / SHOW ================= */
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerWidth >= 768) return; // only mobile
+      if (mobileOpen) return; // keep visible when menu is open
+
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollY.current && currentScrollY > 60) {
+        // scrolling down
+        setMobileVisible(false);
+      } else {
+        // scrolling up or stopped
+        setMobileVisible(true);
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [mobileOpen]);
 
   /* ================= DESKTOP SIDEBAR ================= */
   return (
@@ -92,10 +117,7 @@ const Navbar = ({
                       : "text-gray-700 hover:bg-gray-100"
                   }`}
                 >
-                  <motion.div
-                    whileHover={{ scale: 1.15 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
+                  <motion.div whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.95 }}>
                     <Icon className="w-5 h-5 shrink-0" />
                   </motion.div>
 
@@ -143,7 +165,15 @@ const Navbar = ({
       </motion.aside>
 
       {/* ================= MOBILE NAVBAR ================= */}
-      <nav className="md:hidden fixed top-4 left-1/2 -translate-x-1/2 z-50">
+      <motion.nav
+        initial={false}
+        animate={{
+          y: mobileVisible ? 0 : -120,
+          opacity: mobileVisible ? 1 : 0,
+        }}
+        transition={{ duration: 0.25, ease: "easeOut" }}
+        className="md:hidden fixed top-4 left-4 -translate-x-1/2 z-50"
+      >
         <div
           className="flex items-center justify-between px-6 py-3 rounded-full
           bg-white/40 backdrop-blur-2xl border border-white/30
@@ -162,7 +192,7 @@ const Navbar = ({
 
         {mobileOpen && (
           <div className="mt-3 bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg px-4 py-4">
-            {navLinks.map(link => (
+            {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
@@ -179,7 +209,7 @@ const Navbar = ({
             ))}
           </div>
         )}
-      </nav>
+      </motion.nav>
     </>
   );
 };

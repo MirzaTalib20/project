@@ -71,10 +71,11 @@ function App() {
             <Route path="/contact" element={<AboutContact />} />
             <Route path="/admin" element={<AdminDashboard />} />
           </Routes>
+            <Footer />
         </main>
 
         {/* Footer OUTSIDE main */}
-        <Footer />
+      
       </Suspense>
     </Router>
   );

@@ -62,24 +62,24 @@ const HomePage: React.FC = () => {
   );
 
   const [selectedIndex, setSelectedIndex] = useState(0);
-const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
+  const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
 
-useEffect(() => {
-  if (!emblaApi) return;
+  useEffect(() => {
+    if (!emblaApi) return;
 
-  setScrollSnaps(emblaApi.scrollSnapList());
-  setSelectedIndex(emblaApi.selectedScrollSnap());
-
-  const onSelect = () => {
+    setScrollSnaps(emblaApi.scrollSnapList());
     setSelectedIndex(emblaApi.selectedScrollSnap());
-  };
 
-  emblaApi.on("select", onSelect);
+    const onSelect = () => {
+      setSelectedIndex(emblaApi.selectedScrollSnap());
+    };
 
-  return () => {
-    emblaApi.off("select", onSelect);
-  };
-}, [emblaApi]);
+    emblaApi.on("select", onSelect);
+
+    return () => {
+      emblaApi.off("select", onSelect);
+    };
+  }, [emblaApi]);
 
   const featuredProducts = useMemo(() => {
     return products.filter((p) => p.availability === "available").slice(0, 4);
@@ -93,23 +93,14 @@ useEffect(() => {
     () => emblaApi && emblaApi.scrollNext(),
     [emblaApi]
   );
-
-  
+const stats = [
+  { value: "2000+", label: "Rentals Completed" },
+  { value: "500+", label: "Cooling Units Available" },
+  { value: "12+", label: "Cities Served" },
+  { value: "24/7", label: "Emergency Support" },
+];
   // OPTIMIZATION: Memoize city list
-  const cities = useMemo(
-    () => [
-      "Mumbai",
-      "Delhi",
-      "Bangalore",
-      "Hyderabad",
-      "Chennai",
-      "Pune",
-      "Ahmedabad",
-      "Kolkata",
-    ],
-    []
-  );
-
+ 
   return (
     // OPTIMIZATION: LazyMotion wrapper with domAnimation for reduced JS execution
     <LazyMotion features={domAnimation} strict>
@@ -284,141 +275,133 @@ useEffect(() => {
         {/* --- Featured Products --- */}
 
         {/* --- Gallery Section --- */}
-    {/* --- Gallery Section (STABLE) --- */}
-<section className="relative py-20 bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 overflow-hidden">
-  <div className="max-w-7xl mx-auto px-4 md:px-8">
+        {/* --- Gallery Section (STABLE) --- */}
+        <section className="relative py-20 bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 md:px-8">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-10 text-center md:text-left">
+              <div>
+                <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900">
+                  Equipment{" "}
+                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-teal-500">
+                    Gallery
+                  </span>
+                </h2>
+                <p className="text-gray-600 mt-2">
+                  Explore our premium cooling equipment lineup.
+                </p>
+              </div>
 
-    {/* Header */}
-    <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-10 text-center md:text-left">
-      <div>
-        <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900">
-          Equipment{" "}
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-teal-500">
-            Gallery
-          </span>
-        </h2>
-        <p className="text-gray-600 mt-2">
-          Explore our premium cooling equipment lineup.
-        </p>
-      </div>
+              <div className="hidden md:flex gap-3 mt-4 md:mt-0">
+                <button
+                  onClick={scrollPrev}
+                  className="p-3 rounded-full border border-gray-300 hover:bg-gray-100"
+                >
+                  <ChevronLeft className="w-5 h-5 text-gray-700" />
+                </button>
+                <button
+                  onClick={scrollNext}
+                  className="p-3 rounded-full border border-gray-300 hover:bg-gray-100"
+                >
+                  <ChevronRight className="w-5 h-5 text-gray-700" />
+                </button>
+              </div>
+            </div>
 
-      <div className="hidden md:flex gap-3 mt-4 md:mt-0">
-        <button onClick={scrollPrev} className="p-3 rounded-full border border-gray-300 hover:bg-gray-100">
-          <ChevronLeft className="w-5 h-5 text-gray-700" />
-        </button>
-        <button onClick={scrollNext} className="p-3 rounded-full border border-gray-300 hover:bg-gray-100">
-          <ChevronRight className="w-5 h-5 text-gray-700" />
-        </button>
-      </div>
-    </div>
-
-    {/* Carousel */}
-    <div className="overflow-hidden" ref={emblaRef}>
-      <div className="flex">
-
-        {gallery.map((item) => (
-          <div
-            key={item._id}
-            className="
+            {/* Carousel */}
+            <div className="overflow-hidden" ref={emblaRef}>
+              <div className="flex">
+                {gallery.map((item) => (
+                  <div
+                    key={item._id}
+                    className="
               flex-[0_0_85%]
               sm:flex-[0_0_48%]
               md:flex-[0_0_32%]
               lg:flex-[0_0_24%]
               px-3
             "
-          >
-            <div
-              className="
+                  >
+                    <div
+                      className="
                 bg-white/95 border border-gray-200 rounded-2xl
                 shadow-sm hover:shadow-md
                 transition-shadow duration-200
                 overflow-hidden
               "
-            >
-              <div className="relative h-44 sm:h-48 md:h-56 bg-gray-50 flex items-center justify-center">
-                <img
-                  src={item.imageUrl}
-                  alt={item.name}
-                  loading="lazy"
-                  className="w-auto max-w-[85%] h-auto max-h-full object-contain"
-                />
-                <span className="absolute top-3 right-3 bg-gradient-to-r from-blue-50 to-teal-50 text-gray-700 px-2.5 py-0.5 rounded-full text-[11px] font-medium">
-                  {item.category}
-                </span>
-              </div>
+                    >
+                      <div className="relative h-44 sm:h-48 md:h-56 bg-gray-50 flex items-center justify-center">
+                        <img
+                          src={item.imageUrl}
+                          alt={item.name}
+                          loading="lazy"
+                          className="w-auto max-w-[85%] h-auto max-h-full object-contain"
+                        />
+                        <span className="absolute top-3 right-3 bg-gradient-to-r from-blue-50 to-teal-50 text-gray-700 px-2.5 py-0.5 rounded-full text-[11px] font-medium">
+                          {item.category}
+                        </span>
+                      </div>
 
-              <div className="p-4 text-center">
-                <h3 className="text-base font-semibold text-gray-900 mb-1">
-                  {item.name}
-                </h3>
-                <p className="text-xs text-gray-500">
-                  {item.category}
-                </p>
+                      <div className="p-4 text-center">
+                        <h3 className="text-base font-semibold text-gray-900 mb-1">
+                          {item.name}
+                        </h3>
+                        <p className="text-xs text-gray-500">{item.category}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
-        ))}
-
-      </div>
-    </div>
-    {/* Dots */}
-<div className="mt-6 flex justify-center gap-2">
-  {scrollSnaps.map((_, index) => (
-    <button
-      key={index}
-      onClick={() => emblaApi?.scrollTo(index)}
-      className={`
+            {/* Dots */}
+            <div className="mt-6 flex justify-center gap-2">
+              {scrollSnaps.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => emblaApi?.scrollTo(index)}
+                  className={`
         w-2.5 h-2.5 rounded-full transition-all
-        ${index === selectedIndex
-          ? "bg-blue-600 scale-110"
-          : "bg-gray-400/60 hover:bg-gray-500"}
+        ${
+          index === selectedIndex
+            ? "bg-blue-600 scale-110"
+            : "bg-gray-400/60 hover:bg-gray-500"
+        }
       `}
-      aria-label={`Go to slide ${index + 1}`}
-    />
-  ))}
-</div>
-
-  </div>
-</section>
-
-
-        {/* --- Cities Served --- */}
-        <section className="relative py-28 bg-gradient-to-br from-[#f5f7fa] via-[#edf2f7] to-[#e8f1f2] overflow-hidden">
-          <div className="absolute inset-0 flex items-center justify-center opacity-20">
-            {/* OPTIMIZATION: Loading lazy for background assets */}
-            <img
-              src="/assets/india-map-outline.png"
-              alt="India map outline"
-              width={800}
-              height={600}
-              className="w-[800px] h-auto object-contain blur-[2px] select-none pointer-events-none"
-              loading="lazy"
-            />
-          </div>
-          <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 text-center">
-            <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
-              Cities{" "}
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-teal-500">
-                We Serve
-              </span>
-            </h2>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto mb-12">
-              Reliable industrial cooling solutions available across India’s
-              leading cities.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4 mt-16">
-              {cities.map((city) => (
-                <div
-                  key={city}
-                  className="px-6 py-3 bg-white/70 backdrop-blur-md rounded-full shadow-sm text-gray-800 font-medium hover:bg-blue-50 transition-all duration-300"
-                >
-                  {city}
-                </div>
+                  aria-label={`Go to slide ${index + 1}`}
+                />
               ))}
             </div>
           </div>
         </section>
 
+        {/* --- Cities Served --- */}
+        
+ <section className="py-8 md:py-10">
+      <div className="max-w-7xl mx-auto px-4">
+        <div
+          className="
+            grid grid-cols-2 md:grid-cols-4 gap-6
+            bg-blue-50
+            rounded-2xl
+            px-6 py-6 md:py-8
+          "
+        >
+          {stats.map((stat) => (
+            <div
+              key={stat.label}
+              className="text-center flex flex-col gap-1"
+            >
+              <span className="text-3xl md:text-4xl font-extrabold text-blue-700">
+                {stat.value}
+              </span>
+              <span className="text-xs md:text-sm text-gray-600">
+                {stat.label}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
         <HowItWorks />
 
         {/* --- Smart Choice Section --- */}

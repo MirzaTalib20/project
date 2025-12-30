@@ -1,268 +1,315 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { 
-  Phone, 
-  Mail, 
-  MapPin, 
-  Clock, 
-  Users, 
-  Award, 
+import React, { useMemo } from "react";
+import {
+  Phone,
+  Mail,
+  MapPin,
+  Clock,
   Truck,
   Shield,
-  MessageSquare
-} from 'lucide-react';
+  Users,
+  Award,
+  MessageSquare,
+  PhoneCall
+} from "lucide-react";
+
+/**
+ * AboutContact
+ * - Cleaner, trust-focused visual hierarchy
+ * - Reduced visual noise, consistent spacing, accessible CTAs
+ * - No layout-shifting animations; semantic lists for stats/cities
+ */
+
+const StatItem = ({
+  Icon,
+  value,
+  label,
+}: {
+  Icon: React.ElementType;
+  value: string;
+  label: string;
+}) => (
+  <li className="text-center">
+    <Icon className="w-6 h-6 mx-auto text-slate-600 mb-2" aria-hidden="true" />
+    <p className="text-2xl font-bold text-slate-900">{value}</p>
+    <p className="text-sm text-slate-600">{label}</p>
+  </li>
+);
+
+const FeatureItem = ({
+  Icon,
+  title,
+  desc,
+}: {
+  Icon: React.ElementType;
+  title: string;
+  desc: string;
+}) => (
+  <div className="rounded-lg border border-slate-200 p-5">
+    <div className="flex items-start gap-3">
+      <Icon className="w-6 h-6 text-blue-600" aria-hidden="true" />
+      <div>
+        <h3 className="font-semibold text-base text-slate-900 mb-1">{title}</h3>
+        <p className="text-sm text-slate-600 leading-relaxed">{desc}</p>
+      </div>
+    </div>
+  </div>
+);
 
 const AboutContact: React.FC = () => {
+  const cities = useMemo(
+    () => [
+      "Mumbai",
+      "Delhi",
+      "Bangalore",
+      "Hyderabad",
+      "Chennai",
+      "Pune",
+      "Ahmedabad",
+      "Kolkata",
+    ],
+    []
+  );
+
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-600 to-teal-500 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center"
-          >
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">About CoolRent</h1>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-              Your trusted partner for premium cooling equipment rental services across India. 
-              We keep you comfortable with reliable, efficient solutions.
-            </p>
-          </motion.div>
+    <div className="bg-white">
+      {/* HERO */}
+      <section className="pt-4 bg-gradient-to-br from-[#e9e9e9] text-white">
+        <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">
+            Reliable cooling rentals, across India
+          </h1>
+
+          <p className="text-slate-900 max-w-2xl text-base md:text-lg leading-relaxed mb-8">
+            Professional-grade coolers, portable ACs, and mist fans for events,
+            offices, warehouses, and industrial setups — delivered, installed,
+            and supported by experts.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-3">
+            <a
+              href="tel:+919819570211"
+              className="inline-flex items-center justify-center rounded-lg bg-blue-600 hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 text-white px-5 py-3 text-sm font-semibold gap-2"
+              aria-label="Call CoolRentZone to get a quote"
+            >
+       <PhoneCall className="w-5 h-5 text-white-400 " />
+              
+              Call now
+            </a>
+            <a
+              href="https://wa.me/9819570211"
+              className="inline-flex items-center justify-center rounded-lg border border-black-700 bg-green-800 hover:bg-black-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 text-white px-5 py-3 text-sm font-semibold gap-2"
+              aria-label="Chat with CoolRentZone on WhatsApp"
+              rel="noopener"
+            > <svg
+              className="w-5 h-5 fill-current"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+            >
+              <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824zm-3.423-14.416c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm.029 18.88c-1.161 0-2.305-.292-3.318-.844l-3.677.964.984-3.595c-.607-1.052-.927-2.246-.926-3.468.001-3.825 3.113-6.937 6.937-6.937 1.856.001 3.598.723 4.907 2.034 1.31 1.311 2.031 3.054 2.03 4.908-.001 3.825-3.113 6.938-6.937 6.938z" />
+            </svg>
+              WhatsApp
+            </a>
+          </div>
         </div>
       </section>
 
-      {/* About Section */}
+      {/* STORY */}
+      <section className="py-16 border-t border-slate-200">
+        <div className="max-w-6xl mx-auto px-6 grid lg:grid-cols-2 gap-10 lg:gap-14 items-start">
+          <div>
+            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-5">
+              Who we are
+            </h2>
+
+            <div className="space-y-4 text-slate-700 leading-relaxed max-w-xl">
+              <p>
+                Founded in 2020, CoolRentZone was built to solve one clear
+                problem — accessing reliable cooling without heavy investment.
+              </p>
+              <p>
+                From a single-city operation, we’ve grown into a multi-city
+                rental network trusted by event organizers, factories,
+                corporates, and households.
+              </p>
+              <p className="font-medium text-slate-900">
+                Today, we operate 500+ cooling units with 24/7 technical
+                support and same-day deployment capabilities.
+              </p>
+            </div>
+          </div>
+
+          <img
+            src="https://images.pexels.com/photos/416405/pexels-photo-416405.jpeg?auto=compress&cs=tinysrgb&w=600"
+            alt="CoolRentZone team preparing cooling units at a warehouse"
+            className="rounded-xl md:rounded-2xl border border-slate-200 w-full h-auto"
+          />
+        </div>
+      </section>
+
+      {/* STATS */}
+      <section className="py-14 bg-slate-50">
+        <div className="max-w-6xl mx-auto px-6">
+          <ul className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <StatItem Icon={Users} value="5000+" label="Clients served" />
+            <StatItem Icon={Award} value="500+" label="Cooling units" />
+            <StatItem Icon={MapPin} value="8+" label="Cities covered" />
+            <StatItem Icon={Clock} value="24/7" label="Support" />
+          </ul>
+        </div>
+      </section>
+
+      {/* WHY US */}
       <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Story</h2>
-              <div className="space-y-4 text-gray-700">
-                <p>
-                  Founded in 2020, CoolRent emerged from a simple observation: businesses and individuals 
-                  needed flexible, reliable cooling solutions without the burden of ownership. What started 
-                  as a small operation in Mumbai has grown into India's leading cooling equipment rental service.
-                </p>
-                <p>
-                  We specialize in providing high-quality portable air conditioners, industrial fans, mist systems, 
-                  and cooling solutions for events, offices, warehouses, and residential spaces. Our commitment 
-                  to excellence and customer satisfaction has earned us the trust of over 5,000 satisfied customers.
-                </p>
-                <p>
-                  Today, we serve 8 major Indian cities with a fleet of 500+ premium cooling units, 
-                  backed by 24/7 technical support and professional installation services.
-                </p>
-              </div>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative"
-            >
-              <img
-                src="https://images.pexels.com/photos/416405/pexels-photo-416405.jpeg?auto=compress&cs=tinysrgb&w=600"
-                alt="Team"
-                className="rounded-xl shadow-2xl"
-              />
-            </motion.div>
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 text-center mb-10">
+            Why clients choose CoolRentZone
+          </h2>
+
+          <div className="grid md:grid-cols-3 gap-6 md:gap-8">
+            <FeatureItem
+              Icon={Truck}
+              title="Fast deployment"
+              desc="Same-day delivery and professional installation."
+            />
+            <FeatureItem
+              Icon={Shield}
+              title="Zero downtime"
+              desc="Backup units and on-call technicians available."
+            />
+            <FeatureItem
+              Icon={Clock}
+              title="Flexible rentals"
+              desc="Daily, weekly, and long-term rental plans."
+            />
           </div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-16 bg-blue-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Why Choose Us?</h2>
-            <p className="text-gray-600">Numbers that speak for our commitment to excellence</p>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[
-              { icon: <Users className="w-8 h-8" />, number: '5000+', label: 'Happy Customers' },
-              { icon: <Award className="w-8 h-8" />, number: '500+', label: 'Equipment Units' },
-              { icon: <MapPin className="w-8 h-8" />, number: '8', label: 'Cities Served' },
-              { icon: <Clock className="w-8 h-8" />, number: '24/7', label: 'Support Available' }
-            ].map((stat, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="text-center"
-              >
-                <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
-                  <div className="bg-gradient-to-br from-blue-600 to-teal-500 text-white p-3 rounded-lg inline-block mb-4">
-                    {stat.icon}
-                  </div>
-                  <div className="text-3xl font-bold text-gray-900 mb-2">{stat.number}</div>
-                  <div className="text-gray-600">{stat.label}</div>
-                </div>
-              </motion.div>
+      {/* CITIES */}
+      <section className="py-16 bg-slate-100">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-3">
+            Cities we serve
+          </h2>
+          <p className="text-slate-600 mb-8">
+            Expanding our cooling network across India.
+          </p>
+
+          <ul className="flex flex-wrap justify-center gap-3 md:gap-4">
+            {cities.map((city) => (
+              <li key={city}>
+                <span className="px-4 py-2 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-800">
+                  {city}
+                </span>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
+{/* LOCATION MAP */}
+<section className="py-16 bg-white border-t border-slate-200">
+  <div className="max-w-6xl mx-auto px-6">
+    <div className="grid lg:grid-cols-2 gap-10 items-start">
+      
+      {/* Text */}
+      <div>
+        <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-3">
+          Visit our Pune office
+        </h2>
 
-      {/* Services Section */}
-      <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Services</h2>
-            <p className="text-gray-600">Comprehensive cooling solutions for every need</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                icon: <Truck className="w-8 h-8" />,
-                title: 'Free Delivery & Pickup',
-                description: 'Complimentary delivery and installation within city limits'
-              },
-              {
-                icon: <Shield className="w-8 h-8" />,
-                title: 'Professional Maintenance',
-                description: '24/7 technical support and maintenance during rental period'
-              },
-              {
-                icon: <Clock className="w-8 h-8" />,
-                title: 'Flexible Rental Terms',
-                description: 'Daily, weekly, or monthly rental options to suit your needs'
-              }
-            ].map((service, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
-              >
-                <div className="bg-gradient-to-br from-blue-600 to-teal-500 text-white p-3 rounded-lg inline-block mb-4">
-                  {service.icon}
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{service.title}</h3>
-                <p className="text-gray-600">{service.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+        <p className="text-slate-600 mb-6 max-w-md">
+          Our operations hub is based in Pune, enabling fast dispatch,
+          same-day installations, and on-ground technical support.
+        </p>
 
-      {/* Contact Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Contact Us</h2>
-            <p className="text-gray-600">Get in touch with our team for any inquiries</p>
-          </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Contact Info */}
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              className="space-y-8"
+        <ul className="space-y-3 text-sm text-slate-700">
+          <li className="flex gap-3">
+            <MapPin className="w-5 h-5 text-blue-600 shrink-0" />
+            <span>
+              Shop 3, LSBI / Multifit Road,<br />
+              Wadgaon Sheri, Pune – 411014
+            </span>
+          </li>
+
+          <li className="flex gap-3">
+            <Clock className="w-5 h-5 text-blue-600 shrink-0" />
+            <span>24/7 Emergency Support</span>
+          </li>
+
+          <li className="flex gap-3">
+            <Phone className="w-5 h-5 text-blue-600 shrink-0" />
+            <span>+91 98195 70211</span>
+          </li>
+        </ul>
+
+        <a
+          href="https://maps.google.com/?q=Wadgaon+Sheri+Pune"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block mt-6 text-sm font-semibold text-blue-600 hover:underline"
+        >
+          Open in Google Maps →
+        </a>
+      </div>
+
+      {/* Map */}
+      <div className="relative w-full h-[320px] md:h-[380px] rounded-xl overflow-hidden border border-slate-200">
+        <iframe
+          title="CoolRentZone Pune Location"
+          src="https://www.google.com/maps?q=Wadgaon%20Sheri%20Pune&output=embed"
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          className="absolute inset-0 w-full h-full border-0"
+        />
+      </div>
+
+    </div>
+  </div>
+</section>
+      {/* CONTACT CTA */}
+      <section className="py-16 border-t border-slate-200">
+        <div className="max-w-5xl mx-auto px-6 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-3">
+            Need cooling equipment fast?
+          </h2>
+          <p className="text-slate-600 mb-8">
+            Speak to an expert for availability, pricing, and same-day
+            deployment.
+          </p>
+
+          <div className="flex flex-col sm:flex-row justify-center gap-3">
+            <a
+              href="tel:+919819570211"
+              className="inline-flex items-center justify-center rounded-lg bg-blue-600 hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 text-white px-5 py-3 text-sm font-semibold"
+              aria-label="Get a quote by phone"
             >
-              <div className="flex items-start space-x-4">
-                <div className="bg-blue-100 p-3 rounded-lg">
-                  <Phone className="w-6 h-6 text-blue-600" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Phone Numbers</h3>
-                  <div className="space-y-1">
-                    <p className="text-gray-600">Sales: <a href="tel:+91-9999999999" className="text-blue-600 hover:text-blue-700">+91-9999999999</a></p>
-                    <p className="text-gray-600">Support: <a href="tel:+91-8888888888" className="text-blue-600 hover:text-blue-700">+91-8888888888</a></p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-4">
-                <div className="bg-blue-100 p-3 rounded-lg">
-                  <Mail className="w-6 h-6 text-blue-600" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Email Address</h3>
-                  <p className="text-gray-600">
-                    <a href="mailto:info@coolrent.com" className="text-blue-600 hover:text-blue-700">
-                      info@coolrent.com
-                    </a>
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-4">
-                <div className="bg-blue-100 p-3 rounded-lg">
-                  <MapPin className="w-6 h-6 text-blue-600" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Office Address</h3>
-                  <p className="text-gray-600">
-                    123 Business Park, Sector 18<br />
-                    Mumbai, Maharashtra 400001<br />
-                    India
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-4">
-                <div className="bg-blue-100 p-3 rounded-lg">
-                  <Clock className="w-6 h-6 text-blue-600" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Business Hours</h3>
-                  <div className="space-y-1 text-gray-600">
-                    <p>Monday - Saturday: 9:00 AM - 8:00 PM</p>
-                    <p>Sunday: 10:00 AM - 6:00 PM</p>
-                    <p className="text-blue-600 font-medium">Emergency Support: 24/7</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex space-x-4">
-                <a
-                  href="https://wa.me/919999999999"
-                  className="flex items-center space-x-2 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"
-                >
-                  <MessageSquare className="w-5 h-5" />
-                  <span>WhatsApp</span>
-                </a>
-                <a
-                  href="tel:+91-9999999999"
-                  className="flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  <Phone className="w-5 h-5" />
-                  <span>Call Now</span>
-                </a>
-              </div>
-            </motion.div>
-
-            {/* Map */}
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="bg-white rounded-xl shadow-lg overflow-hidden"
+              Get a quote by phone
+            </a>
+            <a
+              href="https://wa.me/919819570211"
+              className="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 text-slate-900 px-5 py-3 text-sm font-semibold gap-2"
+              aria-label="Chat on WhatsApp"
+              rel="noopener"
             >
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d241317.14571176053!2d72.74109715082204!3d19.08227047090621!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7b63d8ab1e7f3%3A0xf0fda6f8b2b3ad!2sMumbai%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1644820123456!5m2!1sen!2sin"
-                width="100%"
-                height="400"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="CoolRent Office Location"
-              ></iframe>
-            </motion.div>
+              <MessageSquare className="w-5 h-5" aria-hidden="true" />
+              Chat on WhatsApp
+            </a>
+          </div>
+
+          {/* Secondary contact details for trust */}
+          <div className="mt-8 grid sm:grid-cols-3 gap-4 text-slate-700">
+            <div className="flex items-center justify-center gap-2 text-sm">
+              <Phone className="w-4 h-4 text-slate-600" aria-hidden="true" />
+              <span>+91 98195 70211</span>
+            </div>
+            <div className="flex items-center justify-center gap-2 text-sm">
+              <Mail className="w-4 h-4 text-slate-600" aria-hidden="true" />
+              <span>coolrentzone@gmail.com</span>
+            </div>
+            <div className="flex items-center justify-center gap-2 text-sm">
+              <MapPin className="w-4 h-4 text-slate-600" aria-hidden="true" />
+              <span>Pune, Maharashtra</span>
+            </div>
           </div>
         </div>
       </section>
