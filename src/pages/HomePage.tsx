@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useMemo } from "react";
+import React, { useEffect, useCallback, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 // OPTIMIZATION: Use LazyMotion and domAnimation to reduce initial bundle size of Framer Motion
 import { LazyMotion, domAnimation, m } from "framer-motion";
@@ -60,6 +60,27 @@ const HomePage: React.FC = () => {
     },
     [AutoPlay({ delay: 3500, stopOnInteraction: false })]
   );
+
+  const [selectedIndex, setSelectedIndex] = useState(0);
+const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
+
+useEffect(() => {
+  if (!emblaApi) return;
+
+  setScrollSnaps(emblaApi.scrollSnapList());
+  setSelectedIndex(emblaApi.selectedScrollSnap());
+
+  const onSelect = () => {
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+  };
+
+  emblaApi.on("select", onSelect);
+
+  return () => {
+    emblaApi.off("select", onSelect);
+  };
+}, [emblaApi]);
+
   const featuredProducts = useMemo(() => {
     return products.filter((p) => p.availability === "available").slice(0, 4);
   }, []);
@@ -73,10 +94,7 @@ const HomePage: React.FC = () => {
     [emblaApi]
   );
 
-  useEffect(() => {
-    if (emblaApi) emblaApi.reInit();
-  }, [emblaApi]);
-
+  
   // OPTIMIZATION: Memoize city list
   const cities = useMemo(
     () => [
@@ -99,7 +117,7 @@ const HomePage: React.FC = () => {
         {/* --- Hero Section --- */}
         <ContextHero />
 
- {/* --- Featured Products (Recommendation Style) --- */}
+        {/* --- Featured Products (Recommendation Style) --- */}
         <section className="py-16 md:py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {/* Header */}
@@ -202,7 +220,6 @@ const HomePage: React.FC = () => {
           </div>
         </section>
 
-
         {/* --- Features Section --- */}
         <section className="py-24 bg-gradient-to-b from-[#FFE8DB]/20 to-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -265,77 +282,105 @@ const HomePage: React.FC = () => {
         </section>
 
         {/* --- Featured Products --- */}
-       
+
         {/* --- Gallery Section --- */}
-        <section className="relative py-20 bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 overflow-hidden">
-          <div className="max-w-7xl mx-auto px-4 md:px-8">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-10 text-center md:text-left">
-              <div>
-                <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900">
-                  Equipment{" "}
-                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-teal-500">
-                    Gallery
-                  </span>
-                </h2>
-                <p className="text-gray-600 mt-2">
-                  Explore our premium cooling equipment lineup.
+    {/* --- Gallery Section (STABLE) --- */}
+<section className="relative py-20 bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 overflow-hidden">
+  <div className="max-w-7xl mx-auto px-4 md:px-8">
+
+    {/* Header */}
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-10 text-center md:text-left">
+      <div>
+        <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900">
+          Equipment{" "}
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-teal-500">
+            Gallery
+          </span>
+        </h2>
+        <p className="text-gray-600 mt-2">
+          Explore our premium cooling equipment lineup.
+        </p>
+      </div>
+
+      <div className="hidden md:flex gap-3 mt-4 md:mt-0">
+        <button onClick={scrollPrev} className="p-3 rounded-full border border-gray-300 hover:bg-gray-100">
+          <ChevronLeft className="w-5 h-5 text-gray-700" />
+        </button>
+        <button onClick={scrollNext} className="p-3 rounded-full border border-gray-300 hover:bg-gray-100">
+          <ChevronRight className="w-5 h-5 text-gray-700" />
+        </button>
+      </div>
+    </div>
+
+    {/* Carousel */}
+    <div className="overflow-hidden" ref={emblaRef}>
+      <div className="flex">
+
+        {gallery.map((item) => (
+          <div
+            key={item._id}
+            className="
+              flex-[0_0_85%]
+              sm:flex-[0_0_48%]
+              md:flex-[0_0_32%]
+              lg:flex-[0_0_24%]
+              px-3
+            "
+          >
+            <div
+              className="
+                bg-white/95 border border-gray-200 rounded-2xl
+                shadow-sm hover:shadow-md
+                transition-shadow duration-200
+                overflow-hidden
+              "
+            >
+              <div className="relative h-44 sm:h-48 md:h-56 bg-gray-50 flex items-center justify-center">
+                <img
+                  src={item.imageUrl}
+                  alt={item.name}
+                  loading="lazy"
+                  className="w-auto max-w-[85%] h-auto max-h-full object-contain"
+                />
+                <span className="absolute top-3 right-3 bg-gradient-to-r from-blue-50 to-teal-50 text-gray-700 px-2.5 py-0.5 rounded-full text-[11px] font-medium">
+                  {item.category}
+                </span>
+              </div>
+
+              <div className="p-4 text-center">
+                <h3 className="text-base font-semibold text-gray-900 mb-1">
+                  {item.name}
+                </h3>
+                <p className="text-xs text-gray-500">
+                  {item.category}
                 </p>
-              </div>
-              <div className="hidden md:flex gap-3 mt-4 md:mt-0">
-                <button
-                  onClick={scrollPrev}
-                  className="p-3 rounded-full border border-gray-300 hover:bg-gray-100 transition"
-                >
-                  <ChevronLeft className="w-5 h-5 text-gray-700" />
-                </button>
-                <button
-                  onClick={scrollNext}
-                  className="p-3 rounded-full border border-gray-300 hover:bg-gray-100 transition"
-                >
-                  <ChevronRight className="w-5 h-5 text-gray-700" />
-                </button>
-              </div>
-            </div>
-            <div className="relative">
-              <div className="overflow-hidden" ref={emblaRef}>
-                <div className="flex gap-5 sm:gap-6 md:gap-8 px-4 sm:px-0">
-                  {gallery.map((item, index) => (
-                    <m.div
-                      key={item._id}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: index * 0.05 }}
-                      className="flex-[0_0_88%] sm:flex-[0_0_45%] md:flex-[0_0_30%] lg:flex-[0_0_22%] bg-white/95 border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg hover:scale-[1.02] transition-all duration-300 snap-center overflow-hidden backdrop-blur-sm"
-                    >
-                      <div className="relative h-44 sm:h-48 md:h-56 bg-gray-50 flex items-center justify-center overflow-hidden">
-                        <img
-                          src={item.imageUrl}
-                          alt={item.name}
-                          loading="lazy"
-                          width={200}
-                          height={180}
-                          className="w-auto max-w-[85%] h-auto max-h-full object-contain"
-                        />
-                        <div className="absolute top-3 right-3 bg-gradient-to-r from-blue-50 to-teal-50 text-gray-700 px-2.5 py-0.5 rounded-full text-[11px] font-medium shadow-sm">
-                          {item.category}
-                        </div>
-                      </div>
-                      <div className="p-4 text-center">
-                        <h3 className="text-base font-semibold text-gray-900 mb-1 leading-tight">
-                          {item.name}
-                        </h3>
-                        <p className="text-xs text-gray-500 leading-snug">
-                          {item.category}
-                        </p>
-                      </div>
-                    </m.div>
-                  ))}
-                </div>
               </div>
             </div>
           </div>
-        </section>
+        ))}
+
+      </div>
+    </div>
+    {/* Dots */}
+<div className="mt-6 flex justify-center gap-2">
+  {scrollSnaps.map((_, index) => (
+    <button
+      key={index}
+      onClick={() => emblaApi?.scrollTo(index)}
+      className={`
+        w-2.5 h-2.5 rounded-full transition-all
+        ${index === selectedIndex
+          ? "bg-blue-600 scale-110"
+          : "bg-gray-400/60 hover:bg-gray-500"}
+      `}
+      aria-label={`Go to slide ${index + 1}`}
+    />
+  ))}
+</div>
+
+  </div>
+</section>
+
 
         {/* --- Cities Served --- */}
         <section className="relative py-28 bg-gradient-to-br from-[#f5f7fa] via-[#edf2f7] to-[#e8f1f2] overflow-hidden">
@@ -374,7 +419,7 @@ const HomePage: React.FC = () => {
           </div>
         </section>
 
-<HowItWorks/>
+        <HowItWorks />
 
         {/* --- Smart Choice Section --- */}
         <section className="py-24 bg-gradient-to-b from-white to-gray-50">

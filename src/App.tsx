@@ -1,9 +1,10 @@
-import React, { Suspense, lazy, useState } from "react";
+import React, { Suspense, lazy, useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Navbar from "./components/ui/Navbar";
 import Footer from "./components/ui/Footer";
 import ScrollToTop from "./components/ui/ScrollToTop";
+import AppLoader from "./components/ui/AppLoader";
 
 // Lazy pages
 const HomePage = lazy(() => import("./pages/HomePage"));
@@ -17,6 +18,25 @@ const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 
 function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [appLoading, setAppLoading] = useState(true);
+
+  // ✅ First-load-only loader
+  useEffect(() => {
+    const loaded = sessionStorage.getItem("app-loaded");
+
+    if (loaded) {
+      setAppLoading(false);
+    } else {
+      const timer = setTimeout(() => {
+        sessionStorage.setItem("app-loaded", "true");
+        setAppLoading(false);
+      }, 1200); // smooth, premium timing
+
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  if (appLoading) return <AppLoader />;
 
   return (
     <Router>
@@ -30,7 +50,7 @@ function App() {
       <Suspense
         fallback={
           <div className="min-h-screen flex items-center justify-center">
-            <span className="text-gray-500 text-sm">Loading…</span>
+            <span className="text-gray-500 text-sm">Loading page…</span>
           </div>
         }
       >
@@ -52,11 +72,11 @@ function App() {
             <Route path="/admin" element={<AdminDashboard />} />
           </Routes>
         </main>
-      </Suspense>
 
-      <Footer />
+        {/* Footer OUTSIDE main */}
+        <Footer />
+      </Suspense>
     </Router>
   );
 }
-
 export default App;
