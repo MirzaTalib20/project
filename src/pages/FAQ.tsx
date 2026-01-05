@@ -163,19 +163,19 @@ const FAQ: React.FC = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
-              href="tel:+91-9999999999"
+              href="tel:+91-7666911159"
               className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-200"
             >
-              Call: +91-9999999999
+              Call: +91-76669 11159
             </a>
             <a
-              href="mailto:info@coolrent.com"
+              href="mailto:coolrentzone@gmail.com"
               className="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-all duration-200"
             >
-              Email: info@coolrent.com
+              Email: coolrentzone@gmail.com
             </a>
             <a
-              href="https://wa.me/919999999999"
+              href="https://wa.me/+917666911159"
               className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors"
             >
               WhatsApp Chat

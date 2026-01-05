@@ -40,7 +40,7 @@ const Footer: React.FC = () => {
             {/* SOCIAL ICONS */}
             <div className="flex gap-4 pt-2">
               <a
-                href="https://wa.me/919819570211"
+                href="https://wa.me/+917666911159"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="WhatsApp"
@@ -131,7 +131,7 @@ const Footer: React.FC = () => {
 
             <div className="flex gap-3">
               <Phone className="w-4 h-4 text-blue-400" />
-              <p>+91 9819570211</p>
+              <p>+91 76669 11159</p>
             </div>
 
             <div className="flex gap-3">

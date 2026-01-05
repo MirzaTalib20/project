@@ -164,30 +164,22 @@ const stats = [
                       {product.description}
                     </p>
 
-                    {/* Price */}
-                    <div className="mt-3 text-gray-900 font-bold text-sm">
-                      ₹{product.rentPrices?.daily}
-                      <span className="text-xs font-normal text-gray-500">
-                        {" "}
-                        / day
-                      </span>
-                    </div>
+                    
 
                     {/* Actions */}
                     <div className="mt-4 flex gap-2">
-                      <Link
-                        to={`/product/${product._id}`}
-                        className="
+                     <a
+  href="tel:7666911159"
+  className="
                   flex-1 text-xs font-semibold
                   bg-blue-600 text-white
                   py-2 rounded-full
                   text-center
                   hover:bg-blue-700
-                  transition
-                "
-                      >
-                        Rent
-                      </Link>
+                  transition"
+>
+  Call Now
+</a>
 
                       <Link
                         to={`/product/${product._id}`}

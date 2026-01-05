@@ -87,7 +87,7 @@ const AboutContact: React.FC = () => {
 
           <div className="flex flex-col sm:flex-row gap-3">
             <a
-              href="tel:+919819570211"
+              href="tel:+917666911159"
               className="inline-flex items-center justify-center rounded-lg bg-blue-600 hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 text-white px-5 py-3 text-sm font-semibold gap-2"
               aria-label="Call CoolRentZone to get a quote"
             >
@@ -96,7 +96,7 @@ const AboutContact: React.FC = () => {
               Call now
             </a>
             <a
-              href="https://wa.me/9819570211"
+              href="https://wa.me/7666911159"
               className="inline-flex items-center justify-center rounded-lg border border-black-700 bg-green-800 hover:bg-black-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 text-white px-5 py-3 text-sm font-semibold gap-2"
               aria-label="Chat with CoolRentZone on WhatsApp"
               rel="noopener"
@@ -238,7 +238,7 @@ const AboutContact: React.FC = () => {
 
           <li className="flex gap-3">
             <Phone className="w-5 h-5 text-blue-600 shrink-0" />
-            <span>+91 98195 70211</span>
+            <span>+91 76669 11159</span>
           </li>
         </ul>
 
@@ -279,14 +279,14 @@ const AboutContact: React.FC = () => {
 
           <div className="flex flex-col sm:flex-row justify-center gap-3">
             <a
-              href="tel:+919819570211"
+              href="tel:+917666911159"
               className="inline-flex items-center justify-center rounded-lg bg-blue-600 hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 text-white px-5 py-3 text-sm font-semibold"
               aria-label="Get a quote by phone"
             >
               Get a quote by phone
             </a>
             <a
-              href="https://wa.me/919819570211"
+              href="https://wa.me/917666911159"
               className="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 text-slate-900 px-5 py-3 text-sm font-semibold gap-2"
               aria-label="Chat on WhatsApp"
               rel="noopener"
@@ -300,7 +300,7 @@ const AboutContact: React.FC = () => {
           <div className="mt-8 grid sm:grid-cols-3 gap-4 text-slate-700">
             <div className="flex items-center justify-center gap-2 text-sm">
               <Phone className="w-4 h-4 text-slate-600" aria-hidden="true" />
-              <span>+91 98195 70211</span>
+              <span>+91 76669 11159</span>
             </div>
             <div className="flex items-center justify-center gap-2 text-sm">
               <Mail className="w-4 h-4 text-slate-600" aria-hidden="true" />
